@@ -10,7 +10,7 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
         className={`
           ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
           rounded-lg p-4 md:p-8 w-full max-w-2xl mx-auto shadow-xl transform transition-all
-          relative my-4 md:my-0
+          relative my-4 md:my-0-
         `}
       >
         {/* Ícone superior - escondido em mobile */}
@@ -43,10 +43,10 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
 
           <div className="space-y-4 md:space-y-6 text-left">
             <p className="text-sm md:text-base">
-              Bem-vindo ao <span className="font-semibold">quizmontecarlo.ml</span>, um webapp que
-              vai testar seus conhecimentos sobre simulação de Monte Carlo aplicado à física médica,
-              especialmente desenvolvido para a disciplina PPGEB42 turma 2024/02 Simulação de Monte
-              Carlo Aplicada à Medicina e Biologia, do PPGEB da UFU.
+              Bem-vindo ao <span className="font-semibold">montecarloquiz.online</span>, um webapp
+              que vai testar seus conhecimentos sobre simulação de Monte Carlo aplicado à física
+              médica, especialmente desenvolvido para a disciplina PPGEB42 turma 2024/02 Simulação
+              de Monte Carlo Aplicada à Medicina e Biologia, do PPGEB da UFU.
             </p>
 
             <div
@@ -129,6 +129,19 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
             <PlayIcon size={20} />
             Começar a Jogar
           </button>
+
+          {/* Créditos */}
+          <div className="mt-6 pt-4 border-t border-gray-600 text-center text-sm opacity-80">
+            <p>
+              Desenvolvido pelo aluno Francisco Diego | (34)9.9900-5794 | franciscodnlneto@gmail.com
+              <br />
+              <span className="text-xs">
+                Doutorando no PPGEB - UFU | Projeto apresentado na disciplina PPGEB42 - Simulação de
+                Monte Carlo Aplicada à Medicina e Biologia | Programa de Pós-Graduação em Engenharia
+                Biomédica - UFU | Nov&apos;2024
+              </span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
