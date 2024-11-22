@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './index.css';
 import App from './App.jsx';
 import ScenarioViewer from './pages/ScenarioViewer.jsx';
+import Help from './pages/Help.jsx'; // Adicione esta linha
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: '/ver/:scenarioId',
     element: <ScenarioViewer />,
+  },
+  {
+    path: '/help', // Adicione esta rota
+    element: <Help />,
   },
 ]);
 

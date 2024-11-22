@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
-import FeedbackModal from './components/FeedbackModal';
-import WelcomeModal from './components/WelcomeModal';
-import CongratulationModal from './components/CongratulationModal';
-import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from './components/scenarios/Scenario1';
-import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from './components/scenarios/Scenario2';
+import FeedbackModal from '../components/FeedbackModal';
+import WelcomeModal from '../components/WelcomeModal';
+import CongratulationModal from '../components/CongratulationModal';
+import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from '../components/scenarios/Scenario1';
+import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from '../components/scenarios/Scenario2';
 import PropTypes from 'prop-types';
 
 const AVAILABLE_SCENARIOS = [
@@ -22,7 +22,7 @@ const AVAILABLE_SCENARIOS = [
   },
 ];
 
-function App() {
+function Help() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showSimulations, setShowSimulations] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
@@ -131,6 +131,8 @@ function App() {
       setShowOptions(true);
       setShowSimulations(true);
       setIsPlaying(true);
+    } else {
+      setIsPlaying(!isPlaying);
     }
   };
 
@@ -227,6 +229,16 @@ function App() {
                     {score === 1 ? '1 pt' : `${score} pts`}
                   </div>
                 )}
+                <button
+                  onClick={handleSimulationToggle}
+                  className={`w-full md:w-auto px-6 py-3 rounded-lg transition-colors ${
+                    isDark
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white'
+                  }`}
+                >
+                  {isPlaying ? 'Pausar Simulação' : 'Iniciar Simulação'}
+                </button>
                 {showSimulations && (
                   <div
                     className={`text-4xl md:text-5xl font-bold ${
@@ -323,7 +335,7 @@ function App() {
   );
 }
 
-App.propTypes = {
+Help.propTypes = {
   option: PropTypes.shape({
     id: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
@@ -332,4 +344,4 @@ App.propTypes = {
   }),
 };
 
-export default App;
+export default Help;
