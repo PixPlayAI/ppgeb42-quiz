@@ -4,28 +4,29 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 const SCENARIO_CONFIG = {
-  id: 'scenario1',
-  title: 'Cenário I: Atenuação de Radiação',
-  question: 'Analise os dois cenários e escolha a alternativa correta:',
+  id: 'scenario4',
+  title: 'Cenário II: Atenuação de Radiação 3D',
+  question:
+    'Compare os cenários e identifique possíveis aplicações considerando a quantidade de radiação emitida:',
   options: [
     {
       id: 'correct',
-      text: 'A fonte radioativa emite a mesma intensidade de radiação nos dois cenários, porém a blindagem do cenário II apresenta coeficiente de atenuação linear (μ) que é bem maior do que o valor da blindagem do cenário I',
+      text: 'A intensa emissão do primeiro cenário sugere fonte para radioterapia externa com Cobalto-60, enquanto a menor emissão do segundo sugere uso em cintilografia com Tecnécio-99m.',
       isCorrect: true,
     },
     {
       id: 'plausible1',
-      text: 'A fonte radioativa do cenário II emite o dobro da intensidade de radiação em relação ao cenário I, mantendo os mesmos coeficientes de atenuação linear (μ) nas blindagens',
+      text: 'A intensa emissão do segundo cenário sugere fonte de Irídio-192 usada em braquiterapia HDR, enquanto a menor emissão do primeiro indica uso diagnóstico com Gálio-68.',
       isCorrect: false,
     },
     {
       id: 'plausible2',
-      text: 'A blindagem do cenário II possui espessura que é metade da espessura da blindagem do cenário I, mantendo o mesmo material atenuador',
+      text: 'A diferença na quantidade de radiação detectada é causada pelos tipos de blindagem, sendo chumbo no primeiro e concreto no segundo.',
       isCorrect: false,
     },
     {
       id: 'absurd',
-      text: 'A radiação no cenário II é composta por partículas alfa, enquanto no cenário I são fótons gama, por isso há diferença na penetração',
+      text: 'A maior emissão do primeiro cenário poderia ser partículas alfa de Trítio, enquanto a menor do segundo seria radiação gama de Césio-137.',
       isCorrect: false,
     },
   ],
@@ -45,18 +46,21 @@ const SIMULATION_CONFIG = {
   CANNON_RADIUS: 0.15,
   CANNON_SEGMENTS: 32,
   CANNON_OPENING_RADIUS: 0.05,
+  RICOCHET_PROBABILITY: 0.8,
+  TRANSMISSION_PROBABILITY: 0.15,
 };
 
+// Ajustado para emissão contínua
 const getScenarioConfig = (scenarioNumber) => {
   return {
-    particleInterval: 5, // Mesma taxa de emissão para ambos os cenários
-    maxParticles: 400, // Mesmo limite de partículas
-    ricochetProbability: scenarioNumber === 2 ? 0.8 : 0.2, // Cenário 2 reflete muito mais
-    transmissionProbability: scenarioNumber === 2 ? 0.15 : 0.7, // Cenário 2 transmite menos
+    particleInterval: scenarioNumber === 1 ? 5 : 20, // Reduzido intervalo do cenário 2
+    maxParticles: scenarioNumber === 1 ? 400 : 100, // Aumentado limite do cenário 2
+    ricochetProbability: SIMULATION_CONFIG.RICOCHET_PROBABILITY,
+    transmissionProbability: SIMULATION_CONFIG.TRANSMISSION_PROBABILITY,
   };
 };
 
-const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
+const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   const mountRef = useRef(null);
   const particlesRef = useRef([]);
   const lastParticleTimeRef = useRef(0);
@@ -97,6 +101,9 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       directionalLight.position.set(5, 5, 5);
       scene.add(directionalLight);
 
+      // Definição do ângulo de emissão
+      const emissionAngle = THREE.MathUtils.degToRad(15); // Ângulo de 15 graus
+
       // Criação do canhão
       const cannonGeometry = new THREE.CylinderGeometry(
         SIMULATION_CONFIG.CANNON_RADIUS,
@@ -111,11 +118,10 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       });
       const cannon = new THREE.Mesh(cannonGeometry, cannonMaterial);
 
-      // Rotaciona o canhão para apontar na mesma direção das partículas emitidas
-      const emissionAngle = THREE.MathUtils.degToRad(15); // Ângulo de 15 graus
-      cannon.rotation.z = Math.PI / 2 + emissionAngle; // Ajuste do ângulo do canhão
+      // Rotaciona o canhão para o ângulo de emissão definido
+      cannon.rotation.z = Math.PI / 2 + emissionAngle;
 
-      // Define a posição do canhão
+      // Define a posição do canhão de modo que o centro de massa coincida com a origem da emissão
       const cannonPosition = new THREE.Vector3(
         SIMULATION_CONFIG.SOURCE_POSITION +
           (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(emissionAngle),
@@ -125,20 +131,26 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       cannon.position.copy(cannonPosition);
       scene.add(cannon);
 
-      // Removendo o buraco preto (origem preta)
-      // const holeGeometry = new THREE.CircleGeometry(
-      //   SIMULATION_CONFIG.CANNON_OPENING_RADIUS,
-      //   SIMULATION_CONFIG.CANNON_SEGMENTS
-      // );
-      // const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-      // const hole = new THREE.Mesh(holeGeometry, holeMaterial);
-      // hole.position.set(
-      //   SIMULATION_CONFIG.SOURCE_POSITION + SIMULATION_CONFIG.CANNON_LENGTH * Math.cos(emissionAngle),
-      //   SIMULATION_CONFIG.CANNON_LENGTH * Math.sin(emissionAngle),
-      //   0
-      // );
-      // hole.rotation.y = Math.PI / 2;
-      // scene.add(hole);
+      // Removendo o buraco preto e ajustando a cor para integrar melhor à cena
+      // Tornando o buraco transparente
+      const holeGeometry = new THREE.CircleGeometry(
+        SIMULATION_CONFIG.CANNON_OPENING_RADIUS,
+        SIMULATION_CONFIG.CANNON_SEGMENTS
+      );
+      const holeMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.0,
+      }); // Tornado transparente
+      const hole = new THREE.Mesh(holeGeometry, holeMaterial);
+      hole.position.set(
+        SIMULATION_CONFIG.SOURCE_POSITION +
+          SIMULATION_CONFIG.CANNON_LENGTH * Math.cos(emissionAngle),
+        SIMULATION_CONFIG.CANNON_LENGTH * Math.sin(emissionAngle),
+        0
+      );
+      hole.rotation.y = Math.PI / 2;
+      scene.add(hole);
 
       const barrier = new THREE.Mesh(
         new THREE.BoxGeometry(0.2, 2.5, 1.0),
@@ -187,12 +199,14 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
 
     const scenarioConfig = getScenarioConfig(scenarioNumber);
 
+    // Definição do ângulo de emissão novamente para uso neste escopo
+    const emissionAngle = THREE.MathUtils.degToRad(15); // Certifique-se de que este valor corresponde ao usado anteriormente
+
     const createParticle = () => {
       const theta = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
       const phi = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
 
       // Definição da velocidade da partícula
-      // Modificado para emitir partículas em um ângulo em relação ao eixo X
       const velocity = new THREE.Vector3(
         SIMULATION_CONFIG.BASE_SPEED * Math.cos(theta) * Math.cos(phi),
         SIMULATION_CONFIG.BASE_SPEED * Math.sin(phi) + 1, // Adiciona componente Y para inclinar a direção
@@ -200,26 +214,26 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       );
 
       // Define a posição inicial da partícula no centro do canhão
-      const position = new THREE.Vector3(
+      const initialPosition = new THREE.Vector3(
         SIMULATION_CONFIG.SOURCE_POSITION +
-          (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(THREE.MathUtils.degToRad(15)),
-        (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.sin(THREE.MathUtils.degToRad(15)),
+          (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(emissionAngle),
+        (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.sin(emissionAngle),
         0
       );
 
       const particle = new THREE.ArrowHelper(
         velocity.clone().normalize(),
-        position.clone(),
+        initialPosition.clone(),
         SIMULATION_CONFIG.PARTICLE_SIZE,
-        0xff0000,
+        0xef4444, // Mantém a cor vermelha para as partículas
         SIMULATION_CONFIG.HEAD_LENGTH,
         SIMULATION_CONFIG.HEAD_WIDTH
       );
 
       particle.userData = {
         velocity: velocity,
-        position: position.clone(),
-        lastPosition: position.clone(),
+        position: initialPosition.clone(),
+        lastPosition: initialPosition.clone(),
         active: true,
       };
 
@@ -241,6 +255,7 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         const { velocity, position, lastPosition } = particle.userData;
         position.copy(lastPosition).add(velocity.clone().multiplyScalar(scaledDelta));
 
+        // Verifica colisão com a barreira
         if (
           position.x >= -0.1 &&
           position.x <= 0.1 &&
@@ -284,6 +299,7 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         const deltaTime = Math.min((currentTime - lastUpdateTimeRef.current) * 0.001, 0.1);
         lastUpdateTimeRef.current = currentTime;
 
+        // Garante criação contínua de partículas
         if (currentTime - lastParticleTimeRef.current >= scenarioConfig.particleInterval) {
           const particle = createParticle();
           particlesRef.current.push(particle);
@@ -332,11 +348,11 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   );
 };
 
-Scenario1.propTypes = {
+Scenario4.propTypes = {
   isPlaying: PropTypes.bool.isRequired,
   isDark: PropTypes.bool.isRequired,
   scenarioNumber: PropTypes.number,
 };
 
 export { SCENARIO_CONFIG };
-export default Scenario1;
+export default Scenario4;
