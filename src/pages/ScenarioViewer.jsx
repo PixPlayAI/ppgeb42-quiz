@@ -5,6 +5,7 @@ import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from '../components/s
 import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from '../components/scenarios/Scenario2';
 import Scenario3, { SCENARIO_CONFIG as SCENARIO_3_CONFIG } from '../components/scenarios/Scenario3';
 import Scenario4, { SCENARIO_CONFIG as SCENARIO_4_CONFIG } from '../components/scenarios/Scenario4';
+import Scenario5, { SCENARIO_CONFIG as SCENARIO_5_CONFIG } from '../components/scenarios/Scenario5';
 
 const SCENARIOS = {
   Scenario1: {
@@ -30,6 +31,12 @@ const SCENARIOS = {
     component: Scenario4,
     config: SCENARIO_4_CONFIG,
     renderComponent: (props) => <Scenario4 {...props} />,
+  },
+  Scenario5: {
+    id: 'scenario5',
+    component: Scenario5,
+    config: SCENARIO_5_CONFIG,
+    renderComponent: (props) => <Scenario5 {...props} />,
   },
 };
 
