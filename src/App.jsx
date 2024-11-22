@@ -6,6 +6,7 @@ import CongratulationModal from './components/CongratulationModal';
 import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from './components/scenarios/Scenario1';
 import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from './components/scenarios/Scenario2';
 import PropTypes from 'prop-types';
+import Footer from './components/Footer';
 
 const AVAILABLE_SCENARIOS = [
   {
@@ -319,6 +320,7 @@ function App() {
           </div>
         )}
       </div>
+      {showSimulations && <Footer isDark={isDark} />}
     </div>
   );
 }
