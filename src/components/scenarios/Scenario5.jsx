@@ -272,7 +272,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
   return (
     <canvas
       ref={canvasRef}
-      width={450}
+      width={440}
       height={300}
       className={`border rounded-lg shadow-md ${isDark ? 'bg-gray-800' : 'bg-white'}`}
     />
