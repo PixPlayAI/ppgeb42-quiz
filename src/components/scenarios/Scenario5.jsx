@@ -1,3 +1,4 @@
+// src/components/scenarios/Scenario5.jsx
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
@@ -30,7 +31,20 @@ const SCENARIO_CONFIG = {
 };
 
 const SIMULATION_CONFIG = {
-  startPoint: { x: 50, y: 150 },
+  // Área de emissão das partículas (mantida inalterada)
+  emissionArea: {
+    x: 30, // Posição no eixo x
+    y: 135, // Posição no eixo y
+    width: 20, // Largura da área de emissão
+    height: 20, // Altura da área de emissão
+  },
+  // Configuração do canhão (aumentada a grossura)
+  cannon: {
+    x: 20, // Posição no eixo x (ajustada para centralizar sobre a área de emissão)
+    y: 125, // Posição no eixo y (ajustada para centralizar sobre a área de emissão)
+    width: 40, // Aumentada de 20 para 40
+    height: 40, // Aumentada de 20 para 40
+  },
   electricField: {
     x: 150,
     y: 50,
@@ -84,7 +98,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    // Função para criar uma partícula aleatória
+    // Função para criar uma partícula aleatória emitida do canhão cilíndrico
     const createParticle = () => {
       const particleType =
         SIMULATION_CONFIG.particleTypes[
@@ -93,33 +107,28 @@ const Scenario5 = ({ isPlaying, isDark }) => {
       const angle = (Math.random() - 0.5) * (Math.PI / 16);
       const speed = 2 + Math.random();
 
+      // Emissão a partir de uma posição dentro da área de emissão
+      const emissionX =
+        SIMULATION_CONFIG.emissionArea.x + Math.random() * SIMULATION_CONFIG.emissionArea.width;
+      const emissionY =
+        SIMULATION_CONFIG.emissionArea.y + Math.random() * SIMULATION_CONFIG.emissionArea.height;
+
       return {
         id: `${particleType.type}-${Date.now()}-${Math.random()}`,
         type: particleType.type,
         color: particleType.color,
-        x: SIMULATION_CONFIG.startPoint.x,
-        y: SIMULATION_CONFIG.startPoint.y + (Math.random() - 0.5) * 10,
+        x: emissionX,
+        y: emissionY,
         vx: speed * Math.cos(angle),
         vy: speed * Math.sin(angle),
         deflectionCoefficient: particleType.deflectionCoefficient,
         active: true,
-        trail: [{ x: SIMULATION_CONFIG.startPoint.x, y: SIMULATION_CONFIG.startPoint.y }],
+        trail: [{ x: emissionX, y: emissionY }],
       };
     };
 
     const animate = () => {
-      if (!isPlaying) {
-        cancelAnimationFrame(animationFrameRef.current);
-        return;
-      }
-
-      // Emissão de novas partículas
-      for (let i = 0; i < SIMULATION_CONFIG.emissionRate; i++) {
-        if (particlesRef.current.length < SIMULATION_CONFIG.maxParticles) {
-          particlesRef.current.push(createParticle());
-        }
-      }
-
+      // Limpar o canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Desenhar fundo
@@ -165,55 +174,64 @@ const Scenario5 = ({ isPlaying, isDark }) => {
       ctx.fillStyle = '#6b7280';
       ctx.fillRect(screen.x, screen.y, screen.width, screen.height);
 
-      // Desenhar fonte
-      ctx.beginPath();
-      ctx.arc(SIMULATION_CONFIG.startPoint.x, SIMULATION_CONFIG.startPoint.y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = '#ef4444';
-      ctx.fill();
-
-      // Atualizar e desenhar partículas
-      particlesRef.current = particlesRef.current.filter((particle) => {
-        if (!particle.active) return false;
-
-        // Atualizar posição
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        // Aplicar desvio no campo elétrico (vy)
-        if (
-          particle.x >= SIMULATION_CONFIG.electricField.x &&
-          particle.x <= SIMULATION_CONFIG.electricField.x + SIMULATION_CONFIG.electricField.width
-        ) {
-          particle.vy += particle.deflectionCoefficient;
-        }
-
-        // Limites do canvas
-        if (particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
-          return false;
-        }
-
-        // Detecção de colisão com o anteparo
-        if (
-          particle.x >= screen.x &&
-          particle.x <= screen.x + screen.width &&
-          particle.y >= screen.y &&
-          particle.y <= screen.y + screen.height
-        ) {
-          const rand = Math.random();
-          if (rand < SIMULATION_CONFIG.reflectionProbability) {
-            // Reflete a partícula
-            particle.vx = -particle.vx;
-            particle.x = screen.x - 1;
-          } else {
-            // Partícula atravessa o anteparo
-            particle.active = false;
+      // Desenhar partículas somente se a simulação estiver em execução
+      if (isPlaying) {
+        // Emissão de novas partículas
+        for (let i = 0; i < SIMULATION_CONFIG.emissionRate; i++) {
+          if (particlesRef.current.length < SIMULATION_CONFIG.maxParticles) {
+            particlesRef.current.push(createParticle());
           }
         }
 
-        // Adicionar posição ao rastro
-        particle.trail.push({ x: particle.x, y: particle.y });
-        if (particle.trail.length > 20) particle.trail.shift();
+        // Atualizar partículas
+        particlesRef.current = particlesRef.current.filter((particle) => {
+          if (!particle.active) return false;
 
+          // Atualizar posição
+          particle.x += particle.vx;
+          particle.y += particle.vy;
+
+          // Aplicar desvio no campo elétrico (vy)
+          if (
+            particle.x >= SIMULATION_CONFIG.electricField.x &&
+            particle.x <= SIMULATION_CONFIG.electricField.x + SIMULATION_CONFIG.electricField.width
+          ) {
+            particle.vy += particle.deflectionCoefficient;
+          }
+
+          // Limites do canvas
+          if (particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
+            return false;
+          }
+
+          // Detecção de colisão com o anteparo
+          if (
+            particle.x >= screen.x &&
+            particle.x <= screen.x + screen.width &&
+            particle.y >= screen.y &&
+            particle.y <= screen.y + screen.height
+          ) {
+            const rand = Math.random();
+            if (rand < SIMULATION_CONFIG.reflectionProbability) {
+              // Reflete a partícula
+              particle.vx = -particle.vx;
+              particle.x = screen.x - 1;
+            } else {
+              // Partícula atravessa o anteparo
+              return false;
+            }
+          }
+
+          // Adicionar posição ao rastro
+          particle.trail.push({ x: particle.x, y: particle.y });
+          if (particle.trail.length > 20) particle.trail.shift();
+
+          return true;
+        });
+      }
+
+      // Desenhar partículas
+      particlesRef.current.forEach((particle) => {
         // Desenhar rastro
         ctx.beginPath();
         ctx.moveTo(particle.trail[0].x, particle.trail[0].y);
@@ -229,13 +247,19 @@ const Scenario5 = ({ isPlaying, isDark }) => {
         ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
         ctx.fillStyle = particle.color;
         ctx.fill();
-
-        return true;
       });
 
+      // Desenhar canhão cilíndrico (acima das partículas)
+      const cannon = SIMULATION_CONFIG.cannon;
+      ctx.fillStyle = '#4b5563'; // Cor do canhão
+      ctx.fillRect(cannon.x, cannon.y, cannon.width, cannon.height);
+      // Remover a escrita "Canhão"
+
+      // Solicitar próximo frame
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
+    // Iniciar o loop de animação
     animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
