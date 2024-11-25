@@ -1,3 +1,4 @@
+// src/pages/ScenarioViewer.jsx
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
@@ -5,7 +6,9 @@ import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from '../components/s
 import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from '../components/scenarios/Scenario2';
 import Scenario3, { SCENARIO_CONFIG as SCENARIO_3_CONFIG } from '../components/scenarios/Scenario3';
 import Scenario4, { SCENARIO_CONFIG as SCENARIO_4_CONFIG } from '../components/scenarios/Scenario4';
-import Scenario5, { SCENARIO_CONFIG as SCENARIO_5_CONFIG } from '../components/scenarios/Scenario5';
+import Scenario5, {
+  getScenarioConfig as getScenario5Config,
+} from '../components/scenarios/Scenario5';
 
 const SCENARIOS = {
   Scenario1: {
@@ -35,7 +38,9 @@ const SCENARIOS = {
   Scenario5: {
     id: 'scenario5',
     component: Scenario5,
-    config: SCENARIO_5_CONFIG,
+    get config() {
+      return getScenario5Config();
+    },
     renderComponent: (props) => <Scenario5 {...props} />,
   },
 };
@@ -48,25 +53,68 @@ function ScenarioViewer() {
   const [initialStart, setInitialStart] = useState(true);
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [scenarioConfig, setScenarioConfig] = useState(SCENARIOS[scenarioId]?.config);
 
+  // Único useEffect para gerenciar atualizações do config
   useEffect(() => {
+    let checkConfigInterval;
+
     if (SCENARIOS[scenarioId]) {
-      setOptions(prepareOptions(SCENARIOS[scenarioId].config));
+      console.log('🎲 Iniciando monitoramento do cenário:', scenarioId);
+
+      const checkAndUpdateConfig = () => {
+        const currentConfig = SCENARIOS[scenarioId].config;
+        console.log('🔍 Verificando config atual:', currentConfig);
+
+        if (currentConfig.question !== 'Carregando...') {
+          console.log('🔄 Config atualizada:', currentConfig);
+          setScenarioConfig(currentConfig);
+          setOptions(prepareOptions(currentConfig));
+          if (checkConfigInterval) {
+            clearInterval(checkConfigInterval);
+          }
+        }
+      };
+
+      // Checar imediatamente
+      checkAndUpdateConfig();
+
+      // Continuar checando até receber a resposta
+      checkConfigInterval = setInterval(checkAndUpdateConfig, 100);
+
+      // Adicionar listener para eventos de atualização
+      const handleConfigUpdate = () => {
+        console.log('📢 Evento de atualização recebido');
+        checkAndUpdateConfig();
+      };
+
+      window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
+
+      return () => {
+        if (checkConfigInterval) {
+          clearInterval(checkConfigInterval);
+        }
+        window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
+      };
     }
   }, [scenarioId]);
 
   const prepareOptions = (scenarioConfig) => {
+    console.log('🔄 Preparando opções com config:', scenarioConfig);
     const shuffledOptions = scenarioConfig.options
       .map((option) => ({ ...option }))
       .sort(() => Math.random() - 0.5);
 
-    return shuffledOptions
+    const preparedOptions = shuffledOptions
       .map((option, index) => ({
         ...option,
         label: `${String.fromCharCode(65 + index)})  `,
         position: index,
       }))
       .sort((a, b) => a.position - b.position);
+
+    console.log('✅ Opções preparadas:', preparedOptions);
+    return preparedOptions;
   };
 
   useEffect(() => {
@@ -115,8 +163,8 @@ function ScenarioViewer() {
   const handleOptionClick = (optionId) => {
     if (!selectedOption) {
       setSelectedOption(optionId);
-      const selectedOption = options.find((opt) => opt.id === optionId);
-      if (selectedOption.isCorrect) {
+      const selectedOpt = options.find((opt) => opt.id === optionId);
+      if (selectedOpt.isCorrect) {
         console.log('Correto!');
       } else {
         console.log('Incorreto!');
@@ -148,7 +196,7 @@ function ScenarioViewer() {
           <h1
             className={`text-xl md:text-3xl font-bold mb-0 text-center flex-grow ${isDark ? 'text-white' : 'text-gray-900'}`}
           >
-            {currentScenario.config.title}
+            {scenarioConfig?.title || 'Carregando...'}
           </h1>
           <button
             onClick={toggleTheme}
@@ -194,7 +242,7 @@ function ScenarioViewer() {
           <h2
             className={`text-lg md:text-xl font-semibold mb-4 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}
           >
-            {currentScenario.config.question}
+            {scenarioConfig?.question || 'Carregando...'}
           </h2>
           <div className="grid gap-3">
             {options.map((option) => (

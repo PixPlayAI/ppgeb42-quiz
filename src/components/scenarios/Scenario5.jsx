@@ -1,49 +1,48 @@
 // src/components/scenarios/Scenario5.jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { generateScenarioContent } from '../../services/openai';
 
-const SCENARIO_CONFIG = {
+let SCENARIO_CONFIG = {
   id: 'scenario5',
   title: 'Cenário II: Experimento de Rutherford',
-  question: 'Analise os dois cenários e escolha a alternativa correta:',
+  question: 'Carregando...',
   options: [
     {
       id: 'option1',
-      text: 'A fonte radioativa emite a mesma intensidade de radiação nos dois cenários, porém a blindagem do cenário II apresenta coeficiente de atenuação linear (μ) que é bem maior do que o valor da blindagem do cenário I',
+      text: 'Carregando...',
       isCorrect: true,
     },
     {
       id: 'option2',
-      text: 'A fonte radioativa do cenário II emite o dobro da intensidade de radiação em relação ao cenário I, mantendo os mesmos coeficientes de atenuação linear (μ) nas blindagens',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
       id: 'option3',
-      text: 'A blindagem do cenário II possui espessura que é metade da espessura da blindagem do cenário I, mantendo o mesmo material atenuador',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
       id: 'option4',
-      text: 'A radiação no cenário II é composta por partículas alfa, enquanto no cenário I são fótons gama, por isso há diferença na penetração',
+      text: 'Carregando...',
       isCorrect: false,
     },
   ],
 };
 
 const SIMULATION_CONFIG = {
-  // Área de emissão das partículas (mantida inalterada)
   emissionArea: {
-    x: 30, // Posição no eixo x
-    y: 135, // Posição no eixo y
-    width: 20, // Largura da área de emissão
-    height: 20, // Altura da área de emissão
+    x: 30,
+    y: 135,
+    width: 20,
+    height: 20,
   },
-  // Configuração do canhão (aumentada a grossura)
   cannon: {
-    x: 20, // Posição no eixo x (ajustada para centralizar sobre a área de emissão)
-    y: 125, // Posição no eixo y (ajustada para centralizar sobre a área de emissão)
-    width: 40, // Aumentada de 20 para 40
-    height: 40, // Aumentada de 20 para 40
+    x: 20,
+    y: 125,
+    width: 40,
+    height: 40,
   },
   electricField: {
     x: 150,
@@ -86,19 +85,93 @@ const SIMULATION_CONFIG = {
   ],
   emissionRate: 5,
   maxParticles: 500,
-  reflectionProbability: 0.55, // Probabilidade de reflexão maior que no cenário I
+  reflectionProbability: 0.55,
 };
+
+const scenarioPrompt = `
+Gere uma questão de múltipla escolha sobre o seguinte cenário:
+
+No experimento de Rutherford, partículas são emitidas de uma fonte e passam por um forte campo elétrico.
+Observa-se que:
+- Partículas BETA (LARANJAS) são fortemente atraídas para o campo positivo
+- Partículas ALFA (AZUIS) são atraídas para o polo negativo
+- Partículas GAMA não sofrem alteração na trajetória
+
+A questão deve avaliar se o aluno sabe identificar as partículas ALFA, BETA e GAMA e explicar por que elas sofrem ou não alteração em suas trajetórias.
+
+Requisitos:
+- A questão deve ter 4 alternativas
+- Apenas uma alternativa deve estar correta
+- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
+- Foque no comportamento das partículas em campos elétricos
+
+Retorne a resposta EXATAMENTE neste formato JSON:
+{
+  "id": "scenario5",
+  "title": "Cenário II: Experimento de Rutherford",
+  "question": "[Sua pergunta aqui]",
+  "options": [
+    {
+      "id": "option1",
+      "text": "[Texto da primeira alternativa]",
+      "isCorrect": true
+    },
+    {
+      "id": "option2",
+      "text": "[Texto da segunda alternativa]",
+      "isCorrect": false
+    },
+    {
+      "id": "option3",
+      "text": "[Texto da terceira alternativa]",
+      "isCorrect": false
+    },
+    {
+      "id": "option4",
+      "text": "[Texto da quarta alternativa]",
+      "isCorrect": false
+    }
+  ]
+}`;
 
 const Scenario5 = ({ isPlaying, isDark }) => {
   const canvasRef = useRef(null);
-  const particlesRef = useRef([]);
+  const particles = useRef([]);
   const animationFrameRef = useRef(null);
+  const hasUpdated = useRef(false);
+
+  const updateConfig = useCallback((newConfig) => {
+    if (!hasUpdated.current) {
+      console.log('📝 Atualizando config pela primeira vez');
+      SCENARIO_CONFIG = newConfig;
+      hasUpdated.current = true;
+      window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchScenarioContent = async () => {
+      if (hasUpdated.current) return; // Evitar múltiplas chamadas
+      try {
+        console.log('📤 Enviando prompt para OpenAI');
+        const generatedContent = await generateScenarioContent(scenarioPrompt);
+        console.log('📥 Resposta recebida da OpenAI:', generatedContent);
+
+        if (generatedContent) {
+          updateConfig(generatedContent);
+        }
+      } catch (error) {
+        console.error('🔴 Erro ao buscar conteúdo:', error);
+      }
+    };
+
+    fetchScenarioContent();
+  }, [updateConfig]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
-    // Função para criar uma partícula aleatória emitida do canhão cilíndrico
     const createParticle = () => {
       const particleType =
         SIMULATION_CONFIG.particleTypes[
@@ -107,7 +180,6 @@ const Scenario5 = ({ isPlaying, isDark }) => {
       const angle = (Math.random() - 0.5) * (Math.PI / 16);
       const speed = 2 + Math.random();
 
-      // Emissão a partir de uma posição dentro da área de emissão
       const emissionX =
         SIMULATION_CONFIG.emissionArea.x + Math.random() * SIMULATION_CONFIG.emissionArea.width;
       const emissionY =
@@ -128,30 +200,24 @@ const Scenario5 = ({ isPlaying, isDark }) => {
     };
 
     const animate = () => {
-      // Limpar o canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Desenhar fundo
       ctx.fillStyle = isDark ? '#1f2937' : '#e5e7eb';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Desenhar título
       ctx.fillStyle = isDark ? '#e5e7eb' : '#1f2937';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
-      ctx.fillText(`Cenário II`, canvas.width / 2, 30);
+      ctx.fillText('Cenário II', canvas.width / 2, 30);
 
-      // Desenhar campo elétrico
       const field = SIMULATION_CONFIG.electricField;
       ctx.fillStyle = '#fbbf24';
       ctx.globalAlpha = 0.2;
       ctx.fillRect(field.x, field.y, field.width, field.height);
       ctx.globalAlpha = 1.0;
 
-      // Desenhar polos
       const { positive, negative } = SIMULATION_CONFIG.poles;
 
-      // Polo Positivo
       ctx.fillStyle = '#dc2626';
       ctx.beginPath();
       ctx.arc(positive.x, positive.y, 10, 0, Math.PI * 2);
@@ -161,7 +227,6 @@ const Scenario5 = ({ isPlaying, isDark }) => {
       ctx.textAlign = 'center';
       ctx.fillText('+', positive.x, positive.y + 4);
 
-      // Polo Negativo
       ctx.fillStyle = '#3b82f6';
       ctx.beginPath();
       ctx.arc(negative.x, negative.y, 10, 0, Math.PI * 2);
@@ -169,29 +234,23 @@ const Scenario5 = ({ isPlaying, isDark }) => {
       ctx.fillStyle = '#ffffff';
       ctx.fillText('-', negative.x, negative.y + 4);
 
-      // Desenhar anteparo (tela) com reflexão
       const screen = SIMULATION_CONFIG.screen;
       ctx.fillStyle = '#6b7280';
       ctx.fillRect(screen.x, screen.y, screen.width, screen.height);
 
-      // Desenhar partículas somente se a simulação estiver em execução
       if (isPlaying) {
-        // Emissão de novas partículas
         for (let i = 0; i < SIMULATION_CONFIG.emissionRate; i++) {
-          if (particlesRef.current.length < SIMULATION_CONFIG.maxParticles) {
-            particlesRef.current.push(createParticle());
+          if (particles.current.length < SIMULATION_CONFIG.maxParticles) {
+            particles.current.push(createParticle());
           }
         }
 
-        // Atualizar partículas
-        particlesRef.current = particlesRef.current.filter((particle) => {
+        particles.current = particles.current.filter((particle) => {
           if (!particle.active) return false;
 
-          // Atualizar posição
           particle.x += particle.vx;
           particle.y += particle.vy;
 
-          // Aplicar desvio no campo elétrico (vy)
           if (
             particle.x >= SIMULATION_CONFIG.electricField.x &&
             particle.x <= SIMULATION_CONFIG.electricField.x + SIMULATION_CONFIG.electricField.width
@@ -199,12 +258,10 @@ const Scenario5 = ({ isPlaying, isDark }) => {
             particle.vy += particle.deflectionCoefficient;
           }
 
-          // Limites do canvas
           if (particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
             return false;
           }
 
-          // Detecção de colisão com o anteparo
           if (
             particle.x >= screen.x &&
             particle.x <= screen.x + screen.width &&
@@ -213,16 +270,13 @@ const Scenario5 = ({ isPlaying, isDark }) => {
           ) {
             const rand = Math.random();
             if (rand < SIMULATION_CONFIG.reflectionProbability) {
-              // Reflete a partícula
               particle.vx = -particle.vx;
               particle.x = screen.x - 1;
             } else {
-              // Partícula atravessa o anteparo
               return false;
             }
           }
 
-          // Adicionar posição ao rastro
           particle.trail.push({ x: particle.x, y: particle.y });
           if (particle.trail.length > 20) particle.trail.shift();
 
@@ -230,9 +284,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
         });
       }
 
-      // Desenhar partículas
-      particlesRef.current.forEach((particle) => {
-        // Desenhar rastro
+      particles.current.forEach((particle) => {
         ctx.beginPath();
         ctx.moveTo(particle.trail[0].x, particle.trail[0].y);
         particle.trail.forEach((point) => {
@@ -242,24 +294,19 @@ const Scenario5 = ({ isPlaying, isDark }) => {
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Desenhar partícula
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
         ctx.fillStyle = particle.color;
         ctx.fill();
       });
 
-      // Desenhar canhão cilíndrico (acima das partículas)
       const cannon = SIMULATION_CONFIG.cannon;
-      ctx.fillStyle = '#4b5563'; // Cor do canhão
+      ctx.fillStyle = '#4b5563';
       ctx.fillRect(cannon.x, cannon.y, cannon.width, cannon.height);
-      // Remover a escrita "Canhão"
 
-      // Solicitar próximo frame
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
-    // Iniciar o loop de animação
     animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
@@ -284,5 +331,6 @@ Scenario5.propTypes = {
   isDark: PropTypes.bool.isRequired,
 };
 
+export const getScenarioConfig = () => SCENARIO_CONFIG;
 export { SCENARIO_CONFIG };
 export default React.memo(Scenario5);
