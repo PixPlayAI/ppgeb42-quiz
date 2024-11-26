@@ -11,14 +11,17 @@ export const generateScenarioContent = async (scenarioPrompt) => {
 
   try {
     console.log('🌐 Iniciando requisição para OpenAI');
-
     const requestData = {
       model: 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
-          content:
-            'You are a physics teacher creating multiple choice questions. Generate questions and answers in JSON format matching the SCENARIO_CONFIG structure.',
+          content: `You are a physics teacher creating multiple choice questions about Rutherford's experiment.
+                    For each question, you must provide:
+                    1. A clear explanation of why the correct answer is right (successMessage)
+                    2. A detailed analysis of why each incorrect option is wrong (detailedExplanation)
+                    3. Focus on helping students understand particle behavior in electric fields
+                    In Portuguese pt-br`,
         },
         {
           role: 'user',
@@ -26,7 +29,7 @@ export const generateScenarioContent = async (scenarioPrompt) => {
         },
       ],
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 2000,
     };
 
     const response = await axios.post('https://api.openai.com/v1/chat/completions', requestData, {

@@ -30,6 +30,8 @@ let SCENARIO_CONFIG = {
       isCorrect: false,
     },
   ],
+  successMessage: 'Carregando...',
+  detailedExplanation: 'Carregando...',
 };
 
 // Função para resetar a configuração
@@ -60,6 +62,8 @@ const resetConfig = () => {
         isCorrect: false,
       },
     ],
+    successMessage: 'Carregando...',
+    detailedExplanation: 'Carregando...',
   };
 };
 
@@ -135,6 +139,8 @@ Requisitos:
 - Apenas uma alternativa deve estar correta
 - As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
 - Foque no comportamento das partículas em campos elétricos
+- Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
+- Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
 
 Retorne a resposta EXATAMENTE neste formato JSON:
 {
@@ -162,9 +168,10 @@ Retorne a resposta EXATAMENTE neste formato JSON:
       "text": "[Texto da quarta alternativa]",
       "isCorrect": false
     }
-  ]
+  ],
+  "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou]",
+  "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta]"
 }`;
-
 const Scenario5 = ({ isPlaying, isDark }) => {
   const canvasRef = useRef(null);
   const particles = useRef([]);
@@ -197,10 +204,44 @@ const Scenario5 = ({ isPlaying, isDark }) => {
 
         // Faz a chamada à API
         const generatedContent = await generateScenarioContent(scenarioPrompt);
+
+        // Verifica se a resposta contém as mensagens de feedback
+        if (!generatedContent.successMessage || !generatedContent.detailedExplanation) {
+          // Se não tiver as mensagens, adiciona mensagens padrão relacionadas ao contexto
+          generatedContent.successMessage = `Parabéns! Você demonstrou compreender corretamente como as partículas alfa, beta e gama interagem com campos elétricos. Sua resposta mostra que você entende que partículas carregadas são defletidas de acordo com sua carga, enquanto partículas neutras não são afetadas.`;
+
+          generatedContent.detailedExplanation = `No experimento de Rutherford:
+  1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
+  2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
+  3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
+
+  As outras alternativas estão incorretas porque:
+  - Confundem as cargas das partículas
+  - Não consideram corretamente a interação entre cargas elétricas
+  - Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`;
+        }
+
         updateConfig(generatedContent);
       } catch (error) {
         console.error('🔴 Erro ao buscar conteúdo:', error);
-        updateConfig(SCENARIO_CONFIG);
+
+        // Em caso de erro, usa uma configuração mais específica
+        const fallbackConfig = {
+          ...SCENARIO_CONFIG,
+          successMessage: `Parabéns! Você demonstrou compreender corretamente como as partículas alfa, beta e gama interagem com campos elétricos. Sua resposta mostra que você entende que partículas carregadas são defletidas de acordo com sua carga, enquanto partículas neutras não são afetadas.`,
+
+          detailedExplanation: `No experimento de Rutherford:
+  1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
+  2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
+  3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
+
+  As outras alternativas estão incorretas porque:
+  - Confundem as cargas das partículas
+  - Não consideram corretamente a interação entre cargas elétricas
+  - Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`,
+        };
+
+        updateConfig(fallbackConfig);
       } finally {
         fetchingRef.current = false;
       }
@@ -218,7 +259,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
       hasUpdated.current = false;
       fetchingRef.current = false;
     };
-  }, [updateConfig]); // Dependência única
+  }, [updateConfig]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

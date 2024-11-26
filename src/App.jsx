@@ -291,6 +291,7 @@ function App() {
             isSuccess={lastAnswerCorrect}
             score={score}
             isDark={isDark}
+            scenarioConfig={currentScenario.config} // Verifique se currentScenario.config está definido
           />
         )}
 

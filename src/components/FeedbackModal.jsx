@@ -1,30 +1,17 @@
+// src/components/FeedbackModal.jsx
 import PropTypes from 'prop-types';
 import { Trophy, XCircle } from 'lucide-react';
 
-const successMessages = [
-  'Nossa, parabéns! Você realmente entende de Monte Carlo. Vamos para a próxima? Seu objetivo é acertar 5 seguidas!',
-  'Excelente! Seus conhecimentos em física das radiações são impressionantes. Continue assim!',
-  'Perfeito! Você domina bem os conceitos de atenuação e transporte de radiação. Próximo desafio?',
-];
-
-const failureMessages = [
-  'Ahh que pena, parece que você precisa estudar mais... sua pontuação vai zerar :(',
-  'Ops! Não foi dessa vez. Que tal revisar os conceitos de coeficiente de atenuação linear?',
-  'Quase lá! Mas vamos precisar zerar sua pontuação. Tente observar melhor o comportamento das partículas.',
-];
-
-const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark }) => {
+const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark, scenarioConfig }) => {
   if (!isOpen) return null;
 
-  const messages = isSuccess ? successMessages : failureMessages;
-  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  // Log para debug
+  console.log('Scenario Config in Modal:', scenarioConfig);
 
   const handleClose = () => {
     if (!isSuccess) {
-      // Se perdeu, faz reload completo da página
       window.location.reload();
     } else {
-      // Se ganhou, continua normal
       onClose();
     }
   };
@@ -36,6 +23,7 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark }) => {
           ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
           rounded-lg p-4 md:p-6 w-full max-w-md mx-auto shadow-xl
           transform transition-all scale-95 md:scale-100
+          overflow-y-auto max-h-[90vh]
         `}
       >
         <div className="text-center space-y-4">
@@ -55,8 +43,33 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark }) => {
             </div>
           </div>
 
-          {/* Mensagem */}
-          <p className="text-sm md:text-base px-2 md:px-4">{randomMessage}</p>
+          {/* Mensagem Personalizada */}
+          <div className="text-sm md:text-base px-2 md:px-4 text-left">
+            {isSuccess ? (
+              <>
+                {scenarioConfig?.successMessage ? (
+                  <p className="mb-4">{scenarioConfig.successMessage}</p>
+                ) : (
+                  <p className="mb-4">
+                    Excelente compreensão dos conceitos físicos! Continue assim!
+                  </p>
+                )}
+              </>
+            ) : (
+              <>
+                <p className="mb-4 font-semibold">Vamos entender melhor este conceito:</p>
+                {scenarioConfig?.detailedExplanation ? (
+                  <p className="mb-4">{scenarioConfig.detailedExplanation}</p>
+                ) : (
+                  <p className="mb-4">
+                    Revise os conceitos de cargas elétricas e sua interação com campos elétricos.
+                    Lembre-se que cargas de sinais opostos se atraem, enquanto cargas de mesmo sinal
+                    se repelem.
+                  </p>
+                )}
+              </>
+            )}
+          </div>
 
           {/* Pontuação */}
           <div className="flex items-center justify-center gap-2 text-base md:text-lg">
@@ -66,7 +79,9 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark }) => {
                 <span className="font-bold text-xl text-green-500">{score}</span>
               </>
             ) : (
-              <span className="font-bold text-yellow-500">Infelizmente sua pontuação zerou</span>
+              <span className="font-bold text-yellow-500">
+                Não desanime! Você pode tentar novamente.
+              </span>
             )}
           </div>
 
@@ -84,7 +99,7 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark }) => {
               }
             `}
           >
-            {isSuccess ? 'Continuar' : 'Recomeçar'}
+            {isSuccess ? 'Continuar' : 'Tentar Novamente'}
           </button>
         </div>
       </div>
@@ -98,6 +113,10 @@ FeedbackModal.propTypes = {
   isSuccess: PropTypes.bool.isRequired,
   score: PropTypes.number.isRequired,
   isDark: PropTypes.bool.isRequired,
+  scenarioConfig: PropTypes.shape({
+    successMessage: PropTypes.string,
+    detailedExplanation: PropTypes.string,
+  }),
 };
 
 export default FeedbackModal;
