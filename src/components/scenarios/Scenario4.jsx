@@ -1,3 +1,4 @@
+// Scenario4.jsx
 import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
@@ -34,6 +35,9 @@ let SCENARIO_CONFIG = {
   successMessage: 'Carregando...',
   detailedExplanation: 'Carregando...',
 };
+
+// Variável para controlar a inicialização
+let isInitialized = false;
 
 // Função para resetar a configuração
 const resetConfig = () => {
@@ -155,29 +159,23 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   const rendererRef = useRef(null);
   const controlsRef = useRef(null);
   const labelRef = useRef(null);
-  const hasUpdated = useRef(false);
-  const fetchingRef = useRef(false);
 
   const updateConfig = useCallback((newConfig) => {
-    if (!hasUpdated.current) {
-      console.log('📝 Atualizando config pela primeira vez');
-      SCENARIO_CONFIG = newConfig;
-      hasUpdated.current = true;
-      window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
-    }
+    SCENARIO_CONFIG = newConfig;
+    window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
   }, []);
 
   useEffect(() => {
     const fetchScenarioContent = async () => {
-      if (hasUpdated.current || fetchingRef.current) return;
+      // Se já foi inicializado, não faz nada
+      if (isInitialized) return;
 
       try {
-        fetchingRef.current = true;
-        resetConfig();
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        isInitialized = true; // Marca como inicializado antes da chamada
 
         const generatedContent = await generateScenarioContent(scenarioPrompt);
 
+        // Verifica se o conteúdo foi gerado corretamente
         if (!generatedContent.successMessage || !generatedContent.detailedExplanation) {
           generatedContent.successMessage =
             'Parabéns! Você demonstrou compreender as diferentes aplicações da radiação na medicina, reconhecendo como diferentes intensidades são apropriadas para diferentes finalidades terapêuticas e diagnósticas.';
@@ -193,9 +191,20 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             '- Propõem usos inadequados dos radioisótopos mencionados';
         }
 
-        updateConfig(generatedContent);
+        // Atualiza a configuração
+        SCENARIO_CONFIG = {
+          ...generatedContent,
+          id: 'scenario4',
+          title: 'Cenário II: Atenuação de Radiação 3D',
+        };
+
+        // Dispara o evento de atualização
+        updateConfig(SCENARIO_CONFIG);
       } catch (error) {
         console.error('🔴 Erro ao buscar conteúdo:', error);
+        isInitialized = false; // Reset em caso de erro
+
+        // Configuração de fallback
         const fallbackConfig = {
           ...SCENARIO_CONFIG,
           successMessage:
@@ -210,19 +219,19 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             '- Interpretam erroneamente o papel da blindagem\n' +
             '- Propõem usos inadequados dos radioisótopos mencionados',
         };
-        updateConfig(fallbackConfig);
-      } finally {
-        fetchingRef.current = false;
+
+        // Atualiza a configuração com fallback
+        SCENARIO_CONFIG = fallbackConfig;
+        updateConfig(SCENARIO_CONFIG);
       }
     };
 
     resetConfig();
     fetchScenarioContent();
 
+    // Cleanup
     return () => {
-      resetConfig();
-      hasUpdated.current = false;
-      fetchingRef.current = false;
+      // Não reseta isInitialized no cleanup para manter o cache
     };
   }, [updateConfig]);
 
@@ -415,7 +424,8 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             velocity.x *= -1;
             position.x = velocity.x > 0 ? 0.11 : -0.11;
           } else if (
-            (rand, scenarioConfig.ricochetProbability + scenarioConfig.transmissionProbability)
+            rand <
+            scenarioConfig.ricochetProbability + scenarioConfig.transmissionProbability
           ) {
             position.x = velocity.x > 0 ? 0.11 : -0.11;
           } else {
@@ -497,6 +507,11 @@ Scenario4.propTypes = {
   scenarioNumber: PropTypes.number,
 };
 
+// Função para obter a configuração do cenário
 export const getScenarioConfig = () => SCENARIO_CONFIG;
+
+// Exporta a configuração como constante
 export { SCENARIO_CONFIG };
+
+// Exporta o componente memoizado
 export default React.memo(Scenario4);

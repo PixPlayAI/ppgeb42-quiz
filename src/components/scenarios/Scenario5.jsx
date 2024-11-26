@@ -34,6 +34,9 @@ let SCENARIO_CONFIG = {
   detailedExplanation: 'Carregando...',
 };
 
+// Variável para controlar a inicialização
+let isInitialized = false;
+
 // Função para resetar a configuração
 const resetConfig = () => {
   SCENARIO_CONFIG = {
@@ -123,6 +126,7 @@ const SIMULATION_CONFIG = {
   maxParticles: 500,
   reflectionProbability: 0.55,
 };
+
 const scenarioPrompt = `
 Gere uma questão de múltipla escolha sobre o seguinte cenário:
 
@@ -172,78 +176,77 @@ Retorne a resposta EXATAMENTE neste formato JSON:
   "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou], não cite alternativa abcd ou 1234 pois elas são embaralhadas",
   "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta], não cite alternativa abcd ou 1234 pois elas são embaralhadas"
 }`;
+
 const Scenario5 = ({ isPlaying, isDark }) => {
   const canvasRef = useRef(null);
   const particles = useRef([]);
   const animationFrameRef = useRef(null);
-  const hasUpdated = useRef(false);
-  const fetchingRef = useRef(false); // Novo ref para controlar o estado de fetch
+  //const labelRef = useRef(null);
 
+  // Função para atualizar a configuração e disparar evento
   const updateConfig = useCallback((newConfig) => {
-    if (!hasUpdated.current) {
-      console.log('📝 Atualizando config pela primeira vez');
-      SCENARIO_CONFIG = newConfig;
-      hasUpdated.current = true;
-      window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
-    }
+    SCENARIO_CONFIG = newConfig;
+    window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
   }, []);
 
   useEffect(() => {
     const fetchScenarioContent = async () => {
-      // Previne múltiplas chamadas simultâneas
-      if (hasUpdated.current || fetchingRef.current) return;
+      // Se já foi inicializado, não faz nada
+      if (isInitialized) return;
 
       try {
-        fetchingRef.current = true;
+        isInitialized = true; // Marca como inicializado antes da chamada
 
-        // Reset a configuração antes de fazer a nova requisição
-        resetConfig();
-
-        // Força um pequeno delay para garantir que o estado "Carregando..." seja renderizado
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Faz a chamada à API
         const generatedContent = await generateScenarioContent(scenarioPrompt);
 
-        // Verifica se a resposta contém as mensagens de feedback
+        // Verifica se o conteúdo foi gerado corretamente
         if (!generatedContent.successMessage || !generatedContent.detailedExplanation) {
           // Se não tiver as mensagens, adiciona mensagens padrão relacionadas ao contexto
           generatedContent.successMessage = `Parabéns! Você demonstrou compreender corretamente como as partículas alfa, beta e gama interagem com campos elétricos. Sua resposta mostra que você entende que partículas carregadas são defletidas de acordo com sua carga, enquanto partículas neutras não são afetadas.`;
 
           generatedContent.detailedExplanation = `No experimento de Rutherford:
-  1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
-  2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
-  3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
+1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
+2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
+3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
 
-  As outras alternativas estão incorretas porque:
-  - Confundem as cargas das partículas
-  - Não consideram corretamente a interação entre cargas elétricas
-  - Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`;
+As outras alternativas estão incorretas porque:
+- Confundem as cargas das partículas
+- Não consideram corretamente a interação entre cargas elétricas
+- Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`;
         }
 
-        updateConfig(generatedContent);
+        // Atualiza a configuração
+        SCENARIO_CONFIG = {
+          ...generatedContent,
+          id: 'scenario5',
+          title: 'Cenário II: Experimento de Rutherford',
+        };
+
+        // Dispara o evento de atualização
+        updateConfig(SCENARIO_CONFIG);
       } catch (error) {
         console.error('🔴 Erro ao buscar conteúdo:', error);
+        isInitialized = false; // Reset em caso de erro
 
-        // Em caso de erro, usa uma configuração mais específica
+        // Configuração de fallback
         const fallbackConfig = {
           ...SCENARIO_CONFIG,
           successMessage: `Parabéns! Você demonstrou compreender corretamente como as partículas alfa, beta e gama interagem com campos elétricos. Sua resposta mostra que você entende que partículas carregadas são defletidas de acordo com sua carga, enquanto partículas neutras não são afetadas.`,
 
           detailedExplanation: `No experimento de Rutherford:
-  1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
-  2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
-  3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
+1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
+2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
+3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
 
-  As outras alternativas estão incorretas porque:
-  - Confundem as cargas das partículas
-  - Não consideram corretamente a interação entre cargas elétricas
-  - Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`,
+As outras alternativas estão incorretas porque:
+- Confundem as cargas das partículas
+- Não consideram corretamente a interação entre cargas elétricas
+- Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`,
         };
 
-        updateConfig(fallbackConfig);
-      } finally {
-        fetchingRef.current = false;
+        // Atualiza a configuração com fallback
+        SCENARIO_CONFIG = fallbackConfig;
+        updateConfig(SCENARIO_CONFIG);
       }
     };
 
@@ -253,11 +256,9 @@ const Scenario5 = ({ isPlaying, isDark }) => {
     // Inicia o fetch
     fetchScenarioContent();
 
-    // Cleanup function
+    // Cleanup
     return () => {
-      resetConfig();
-      hasUpdated.current = false;
-      fetchingRef.current = false;
+      // Não reseta isInitialized no cleanup para manter o cache
     };
   }, [updateConfig]);
 
@@ -293,22 +294,27 @@ const Scenario5 = ({ isPlaying, isDark }) => {
     };
 
     const animate = () => {
+      // Limpa o canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Fundo
       ctx.fillStyle = isDark ? '#1f2937' : '#e5e7eb';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Título
       ctx.fillStyle = isDark ? '#e5e7eb' : '#1f2937';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.fillText('Cenário II', canvas.width / 2, 30);
 
+      // Campo Elétrico
       const field = SIMULATION_CONFIG.electricField;
       ctx.fillStyle = '#fbbf24';
       ctx.globalAlpha = 0.2;
       ctx.fillRect(field.x, field.y, field.width, field.height);
       ctx.globalAlpha = 1.0;
 
+      // Polos
       const { positive, negative } = SIMULATION_CONFIG.poles;
 
       ctx.fillStyle = '#dc2626';
@@ -327,23 +333,28 @@ const Scenario5 = ({ isPlaying, isDark }) => {
       ctx.fillStyle = '#ffffff';
       ctx.fillText('-', negative.x, negative.y + 4);
 
+      // Tela de Detecção
       const screen = SIMULATION_CONFIG.screen;
       ctx.fillStyle = '#6b7280';
       ctx.fillRect(screen.x, screen.y, screen.width, screen.height);
 
       if (isPlaying) {
+        // Emissão de partículas
         for (let i = 0; i < SIMULATION_CONFIG.emissionRate; i++) {
           if (particles.current.length < SIMULATION_CONFIG.maxParticles) {
             particles.current.push(createParticle());
           }
         }
 
+        // Atualização das partículas
         particles.current = particles.current.filter((particle) => {
           if (!particle.active) return false;
 
+          // Atualiza posição
           particle.x += particle.vx;
           particle.y += particle.vy;
 
+          // Interação com o campo elétrico
           if (
             particle.x >= SIMULATION_CONFIG.electricField.x &&
             particle.x <= SIMULATION_CONFIG.electricField.x + SIMULATION_CONFIG.electricField.width
@@ -351,10 +362,12 @@ const Scenario5 = ({ isPlaying, isDark }) => {
             particle.vy += particle.deflectionCoefficient;
           }
 
+          // Verifica se a partícula saiu do canvas
           if (particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
             return false;
           }
 
+          // Interação com a tela de detecção
           if (
             particle.x >= screen.x &&
             particle.x <= screen.x + screen.width &&
@@ -370,6 +383,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
             }
           }
 
+          // Atualiza a trilha da partícula
           particle.trail.push({ x: particle.x, y: particle.y });
           if (particle.trail.length > 20) particle.trail.shift();
 
@@ -377,7 +391,9 @@ const Scenario5 = ({ isPlaying, isDark }) => {
         });
       }
 
+      // Desenha as partículas
       particles.current.forEach((particle) => {
+        // Desenha a trilha
         ctx.beginPath();
         ctx.moveTo(particle.trail[0].x, particle.trail[0].y);
         particle.trail.forEach((point) => {
@@ -387,21 +403,26 @@ const Scenario5 = ({ isPlaying, isDark }) => {
         ctx.lineWidth = 1;
         ctx.stroke();
 
+        // Desenha a partícula
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
         ctx.fillStyle = particle.color;
         ctx.fill();
       });
 
+      // Desenha o canhão
       const cannon = SIMULATION_CONFIG.cannon;
       ctx.fillStyle = '#4b5563';
       ctx.fillRect(cannon.x, cannon.y, cannon.width, cannon.height);
 
+      // Solicita o próximo frame
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
+    // Inicia a animação
     animationFrameRef.current = requestAnimationFrame(animate);
 
+    // Cleanup
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -424,6 +445,11 @@ Scenario5.propTypes = {
   isDark: PropTypes.bool.isRequired,
 };
 
+// Função para obter a configuração do cenário
 export const getScenarioConfig = () => SCENARIO_CONFIG;
+
+// Exporta a configuração como constante
 export { SCENARIO_CONFIG };
+
+// Exporta o componente memoizado
 export default React.memo(Scenario5);
