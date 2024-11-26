@@ -169,8 +169,8 @@ Retorne a resposta EXATAMENTE neste formato JSON:
       "isCorrect": false
     }
   ],
-  "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou]",
-  "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta]"
+  "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou], não cite alternativa abcd ou 1234 pois elas são embaralhadas",
+  "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta], não cite alternativa abcd ou 1234 pois elas são embaralhadas"
 }`;
 const Scenario5 = ({ isPlaying, isDark }) => {
   const canvasRef = useRef(null);

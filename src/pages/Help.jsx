@@ -1,3 +1,4 @@
+// src/pages/Help.jsx
 import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import FeedbackModal from '../components/FeedbackModal';
@@ -7,10 +8,10 @@ import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from '../components/s
 import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from '../components/scenarios/Scenario2';
 import Scenario3, { SCENARIO_CONFIG as SCENARIO_3_CONFIG } from '../components/scenarios/Scenario3';
 import Scenario4, { SCENARIO_CONFIG as SCENARIO_4_CONFIG } from '../components/scenarios/Scenario4';
-import Scenario5, { SCENARIO_CONFIG as SCENARIO_5_CONFIG } from '../components/scenarios/Scenario5';
-
+import Scenario5, {
+  getScenarioConfig as getScenario5Config,
+} from '../components/scenarios/Scenario5';
 import PropTypes from 'prop-types';
-
 import Footer from '../components/Footer';
 
 const AVAILABLE_SCENARIOS = [
@@ -41,7 +42,9 @@ const AVAILABLE_SCENARIOS = [
   {
     id: 'scenario5',
     component: Scenario5,
-    config: SCENARIO_5_CONFIG,
+    get config() {
+      return getScenario5Config();
+    },
     renderComponent: (props) => <Scenario5 {...props} />,
   },
 ];
@@ -82,11 +85,33 @@ function Help() {
   useEffect(() => {
     if (showSimulations) {
       const currentScenario = getCurrentScenario();
-      setOptions(prepareOptions(currentScenario.config));
+      if (currentScenario.id === 'scenario5') {
+        // Adiciona um listener para atualizar as opções quando o cenário 5 for atualizado
+        const handleConfigUpdate = () => {
+          const updatedConfig = currentScenario.config;
+          console.log('Config atualizada:', updatedConfig); // Debug
+          setOptions(prepareOptions(updatedConfig));
+        };
+
+        window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
+        // Chama imediatamente para configuração inicial
+        handleConfigUpdate();
+
+        return () => {
+          window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
+        };
+      } else {
+        setOptions(prepareOptions(currentScenario.config));
+      }
     }
   }, [currentQueueIndex, showSimulations]);
 
   const prepareOptions = (scenarioConfig) => {
+    if (!scenarioConfig || !scenarioConfig.options) {
+      console.log('Config inválida:', scenarioConfig); // Debug
+      return [];
+    }
+
     const shuffledOptions = scenarioConfig.options
       .map((option) => ({ ...option }))
       .sort(() => Math.random() - 0.5);
@@ -204,10 +229,13 @@ function Help() {
   };
 
   const currentScenario = getCurrentScenario();
+  console.log('Current Scenario:', currentScenario); // Debug
 
   return (
     <div
-      className={`min-h-screen py-4 px-2 md:py-8 md:px-4 ${isDark ? 'bg-gray-900' : 'bg-gray-100'} overflow-y-auto`}
+      className={`min-h-screen py-4 px-2 md:py-8 md:px-4 ${
+        isDark ? 'bg-gray-900' : 'bg-gray-100'
+      } overflow-y-auto`}
     >
       <WelcomeModal isOpen={showWelcome} onStart={handleStartGame} isDark={isDark} />
 
@@ -305,56 +333,58 @@ function Help() {
             isSuccess={lastAnswerCorrect}
             score={score}
             isDark={isDark}
-            scenarioConfig={currentScenario.config} // Verifique se currentScenario.config está definido
+            scenarioConfig={currentScenario.config}
           />
         )}
 
-        {showOptions && (
-          <div
-            className={`max-w-2xl mx-auto px-2 md:px-4 mt-4 md:mt-8 transition-all duration-500 ${
-              showOptions ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-            }`}
-          >
-            <h2
-              className={`text-lg md:text-xl font-semibold mb-4 text-center ${
-                isDark ? 'text-white' : 'text-gray-900'
+        {showOptions &&
+          currentScenario.config &&
+          currentScenario.config.question !== 'Carregando...' && (
+            <div
+              className={`max-w-2xl mx-auto px-2 md:px-4 mt-4 md:mt-8 transition-all duration-500 ${
+                showOptions ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
               }`}
             >
-              {currentScenario.config.question}
-            </h2>
-            <div className="grid gap-3">
-              {options.map((option) => (
-                <button
-                  key={option.id}
-                  onClick={() => handleAnswer(option)}
-                  disabled={hasAnswered}
-                  className={`p-3 md:p-4 rounded-lg text-left min-h-[60px] md:min-h-[80px] flex items-center text-sm md:text-base ${
-                    hasAnswered
-                      ? option.isCorrect
-                        ? isDark
-                          ? 'bg-green-700 border-green-600 text-white'
-                          : 'bg-green-600 border-green-700 text-white'
-                        : option.id === selectedAnswer
+              <h2
+                className={`text-lg md:text-xl font-semibold mb-4 text-center ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                {currentScenario.config.question}
+              </h2>
+              <div className="grid gap-3">
+                {options.map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => handleAnswer(option)}
+                    disabled={hasAnswered}
+                    className={`p-3 md:p-4 rounded-lg text-left min-h-[60px] md:min-h-[80px] flex items-center text-sm md:text-base ${
+                      hasAnswered
+                        ? option.isCorrect
                           ? isDark
-                            ? 'bg-red-700 border-red-600 text-white'
-                            : 'bg-red-600 border-red-700 text-white'
-                          : isDark
-                            ? 'bg-gray-800 text-gray-300'
-                            : 'bg-gray-100 text-gray-700'
-                      : isDark
-                        ? 'bg-gray-800 hover:bg-gray-700 text-white'
-                        : 'bg-white hover:bg-gray-50 text-gray-900'
-                  } border transition-colors ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
-                >
-                  <span className="w-[30px] md:w-[40px] font-bold text-base md:text-lg">
-                    {option.label}
-                  </span>
-                  <span className="flex-1">{option.text}</span>
-                </button>
-              ))}
+                            ? 'bg-green-700 border-green-600 text-white'
+                            : 'bg-green-600 border-green-700 text-white'
+                          : option.id === selectedAnswer
+                            ? isDark
+                              ? 'bg-red-700 border-red-600 text-white'
+                              : 'bg-red-600 border-red-700 text-white'
+                            : isDark
+                              ? 'bg-gray-800 text-gray-300'
+                              : 'bg-gray-100 text-gray-700'
+                        : isDark
+                          ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                          : 'bg-white hover:bg-gray-50 text-gray-900'
+                    } border transition-colors ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
+                  >
+                    <span className="w-[30px] md:w-[40px] font-bold text-base md:text-lg">
+                      {option.label}
+                    </span>
+                    <span className="flex-1">{option.text}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </div>
       {showSimulations && <Footer isDark={isDark} />}
     </div>

@@ -1,3 +1,4 @@
+// src/App.tsx
 import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import FeedbackModal from './components/FeedbackModal';
@@ -7,7 +8,9 @@ import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from './components/sc
 import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from './components/scenarios/Scenario2';
 import Scenario3, { SCENARIO_CONFIG as SCENARIO_3_CONFIG } from './components/scenarios/Scenario3';
 import Scenario4, { SCENARIO_CONFIG as SCENARIO_4_CONFIG } from './components/scenarios/Scenario4';
-import Scenario5, { SCENARIO_CONFIG as SCENARIO_5_CONFIG } from './components/scenarios/Scenario5';
+import Scenario5, {
+  getScenarioConfig as getScenario5Config,
+} from './components/scenarios/Scenario5';
 import PropTypes from 'prop-types';
 import Footer from './components/Footer';
 
@@ -39,7 +42,9 @@ const AVAILABLE_SCENARIOS = [
   {
     id: 'scenario5',
     component: Scenario5,
-    config: SCENARIO_5_CONFIG,
+    get config() {
+      return getScenario5Config();
+    },
     renderComponent: (props) => <Scenario5 {...props} />,
   },
 ];
@@ -80,11 +85,29 @@ function App() {
   useEffect(() => {
     if (showSimulations) {
       const currentScenario = getCurrentScenario();
-      setOptions(prepareOptions(currentScenario.config));
+      if (currentScenario.id === 'scenario5') {
+        const handleConfigUpdate = () => {
+          const updatedConfig = currentScenario.config;
+          setOptions(prepareOptions(updatedConfig));
+        };
+
+        window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
+        handleConfigUpdate();
+
+        return () => {
+          window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
+        };
+      } else {
+        setOptions(prepareOptions(currentScenario.config));
+      }
     }
   }, [currentQueueIndex, showSimulations]);
 
   const prepareOptions = (scenarioConfig) => {
+    if (!scenarioConfig || !scenarioConfig.options) {
+      return [];
+    }
+
     const shuffledOptions = scenarioConfig.options
       .map((option) => ({ ...option }))
       .sort(() => Math.random() - 0.5);
