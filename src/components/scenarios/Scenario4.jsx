@@ -1,35 +1,71 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { generateScenarioContent } from '../../services/openai';
 
-const SCENARIO_CONFIG = {
+// Configuração inicial sempre com "Carregando..."
+let SCENARIO_CONFIG = {
   id: 'scenario4',
   title: 'Cenário II: Atenuação de Radiação 3D',
-  question:
-    'Compare os cenários e identifique possíveis aplicações considerando a quantidade de radiação emitida:',
+  question: 'Carregando...',
   options: [
     {
-      id: 'correct',
-      text: 'A intensa emissão do primeiro cenário sugere fonte para radioterapia externa com Cobalto-60, enquanto a menor emissão do segundo sugere uso em cintilografia com Tecnécio-99m.',
+      id: 'option1',
+      text: 'Carregando...',
       isCorrect: true,
     },
     {
-      id: 'plausible1',
-      text: 'A intensa emissão do segundo cenário sugere fonte de Irídio-192 usada em braquiterapia HDR, enquanto a menor emissão do primeiro indica uso diagnóstico com Gálio-68.',
+      id: 'option2',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
-      id: 'plausible2',
-      text: 'A diferença na quantidade de radiação detectada é causada pelos tipos de blindagem, sendo chumbo no primeiro e concreto no segundo.',
+      id: 'option3',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
-      id: 'absurd',
-      text: 'A maior emissão do primeiro cenário poderia ser partículas alfa de Trítio, enquanto a menor do segundo seria radiação gama de Césio-137.',
+      id: 'option4',
+      text: 'Carregando...',
       isCorrect: false,
     },
   ],
+  successMessage: 'Carregando...',
+  detailedExplanation: 'Carregando...',
+};
+
+// Função para resetar a configuração
+const resetConfig = () => {
+  SCENARIO_CONFIG = {
+    id: 'scenario4',
+    title: 'Cenário II: Atenuação de Radiação 3D',
+    question: 'Carregando...',
+    options: [
+      {
+        id: 'option1',
+        text: 'Carregando...',
+        isCorrect: true,
+      },
+      {
+        id: 'option2',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option3',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option4',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+    ],
+    successMessage: 'Carregando...',
+    detailedExplanation: 'Carregando...',
+  };
 };
 
 const SIMULATION_CONFIG = {
@@ -50,11 +86,59 @@ const SIMULATION_CONFIG = {
   TRANSMISSION_PROBABILITY: 0.15,
 };
 
-// Ajustado para emissão contínua
-const getScenarioConfig = (scenarioNumber) => {
+const scenarioPrompt = `
+  Gere uma questão de múltipla escolha sobre o seguinte cenário:
+
+  Neste experimento, são mostrados dois cenários de emissão de radiação em 3D:
+  - No primeiro cenário há uma emissão intensa de radiação
+  - No segundo cenário há uma emissão mais suave e controlada
+  - Em ambos os casos as partículas podem ser refletidas ou transmitidas ao atingir a barreira
+
+  A questão deve avaliar se o aluno compreende as aplicações práticas dessas diferentes intensidades de radiação na área médica.
+
+  Requisitos:
+  - A questão deve ter 4 alternativas
+  - Apenas uma alternativa deve estar correta
+  - As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
+  - Foque em aplicações médicas práticas como radioterapia e diagnóstico por imagem
+  - Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
+  - Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
+
+  Retorne a resposta EXATAMENTE neste formato JSON:
+  {
+    "id": "scenario4",
+    "title": "Cenário II: Atenuação de Radiação 3D",
+    "question": "[Sua pergunta aqui]",
+    "options": [
+      {
+        "id": "option1",
+        "text": "[Texto da primeira alternativa]",
+        "isCorrect": true
+      },
+      {
+        "id": "option2",
+        "text": "[Texto da segunda alternativa]",
+        "isCorrect": false
+      },
+      {
+        "id": "option3",
+        "text": "[Texto da terceira alternativa]",
+        "isCorrect": false
+      },
+      {
+        "id": "option4",
+        "text": "[Texto da quarta alternativa]",
+        "isCorrect": false
+      }
+    ],
+    "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou], não cite alternativa abcd ou 1234 pois elas são embaralhadas",
+    "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta], não cite alternativa abcd ou 1234 pois elas são embaralhadas"
+  }`;
+
+const getSimulationConfig = (scenarioNumber) => {
   return {
-    particleInterval: scenarioNumber === 1 ? 5 : 20, // Reduzido intervalo do cenário 2
-    maxParticles: scenarioNumber === 1 ? 400 : 100, // Aumentado limite do cenário 2
+    particleInterval: scenarioNumber === 1 ? 5 : 20,
+    maxParticles: scenarioNumber === 1 ? 400 : 100,
     ricochetProbability: SIMULATION_CONFIG.RICOCHET_PROBABILITY,
     transmissionProbability: SIMULATION_CONFIG.TRANSMISSION_PROBABILITY,
   };
@@ -71,8 +155,80 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   const rendererRef = useRef(null);
   const controlsRef = useRef(null);
   const labelRef = useRef(null);
+  const hasUpdated = useRef(false);
+  const fetchingRef = useRef(false);
+
+  const updateConfig = useCallback((newConfig) => {
+    if (!hasUpdated.current) {
+      console.log('📝 Atualizando config pela primeira vez');
+      SCENARIO_CONFIG = newConfig;
+      hasUpdated.current = true;
+      window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
+    }
+  }, []);
 
   useEffect(() => {
+    const fetchScenarioContent = async () => {
+      if (hasUpdated.current || fetchingRef.current) return;
+
+      try {
+        fetchingRef.current = true;
+        resetConfig();
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const generatedContent = await generateScenarioContent(scenarioPrompt);
+
+        if (!generatedContent.successMessage || !generatedContent.detailedExplanation) {
+          generatedContent.successMessage =
+            'Parabéns! Você demonstrou compreender as diferentes aplicações da radiação na medicina, reconhecendo como diferentes intensidades são apropriadas para diferentes finalidades terapêuticas e diagnósticas.';
+
+          generatedContent.detailedExplanation =
+            'A resposta correta considera corretamente que:\n' +
+            '1. Alta intensidade de radiação é necessária para radioterapia externa\n' +
+            '2. Baixa intensidade é mais apropriada para exames diagnósticos\n' +
+            '3. Diferentes radioisótopos são escolhidos conforme a aplicação\n\n' +
+            'As outras alternativas estão incorretas porque:\n' +
+            '- Confundem as aplicações apropriadas para cada intensidade\n' +
+            '- Interpretam erroneamente o papel da blindagem\n' +
+            '- Propõem usos inadequados dos radioisótopos mencionados';
+        }
+
+        updateConfig(generatedContent);
+      } catch (error) {
+        console.error('🔴 Erro ao buscar conteúdo:', error);
+        const fallbackConfig = {
+          ...SCENARIO_CONFIG,
+          successMessage:
+            'Parabéns! Você demonstrou compreender as diferentes aplicações da radiação na medicina, reconhecendo como diferentes intensidades são apropriadas para diferentes finalidades terapêuticas e diagnósticas.',
+          detailedExplanation:
+            'A resposta correta considera corretamente que:\n' +
+            '1. Alta intensidade de radiação é necessária para radioterapia externa\n' +
+            '2. Baixa intensidade é mais apropriada para exames diagnósticos\n' +
+            '3. Diferentes radioisótopos são escolhidos conforme a aplicação\n\n' +
+            'As outras alternativas estão incorretas porque:\n' +
+            '- Confundem as aplicações apropriadas para cada intensidade\n' +
+            '- Interpretam erroneamente o papel da blindagem\n' +
+            '- Propõem usos inadequados dos radioisótopos mencionados',
+        };
+        updateConfig(fallbackConfig);
+      } finally {
+        fetchingRef.current = false;
+      }
+    };
+
+    resetConfig();
+    fetchScenarioContent();
+
+    return () => {
+      resetConfig();
+      hasUpdated.current = false;
+      fetchingRef.current = false;
+    };
+  }, [updateConfig]);
+
+  useEffect(() => {
+    if (!mountRef.current) return;
+
     if (!sceneRef.current) {
       const scene = new THREE.Scene();
       scene.background = new THREE.Color(isDark ? 0x444444 : 0xffffff);
@@ -85,7 +241,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(400, 300);
       rendererRef.current = renderer;
-      mountRef.current?.appendChild(renderer.domElement);
+      mountRef.current.appendChild(renderer.domElement);
 
       const controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
@@ -101,10 +257,8 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       directionalLight.position.set(5, 5, 5);
       scene.add(directionalLight);
 
-      // Definição do ângulo de emissão
-      const emissionAngle = THREE.MathUtils.degToRad(15); // Ângulo de 15 graus
+      const emissionAngle = THREE.MathUtils.degToRad(15);
 
-      // Criação do canhão
       const cannonGeometry = new THREE.CylinderGeometry(
         SIMULATION_CONFIG.CANNON_RADIUS,
         SIMULATION_CONFIG.CANNON_RADIUS,
@@ -118,10 +272,8 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       });
       const cannon = new THREE.Mesh(cannonGeometry, cannonMaterial);
 
-      // Rotaciona o canhão para o ângulo de emissão definido
       cannon.rotation.z = Math.PI / 2 + emissionAngle;
 
-      // Define a posição do canhão de modo que o centro de massa coincida com a origem da emissão
       const cannonPosition = new THREE.Vector3(
         SIMULATION_CONFIG.SOURCE_POSITION +
           (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(emissionAngle),
@@ -131,8 +283,6 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       cannon.position.copy(cannonPosition);
       scene.add(cannon);
 
-      // Removendo o buraco preto e ajustando a cor para integrar melhor à cena
-      // Tornando o buraco transparente
       const holeGeometry = new THREE.CircleGeometry(
         SIMULATION_CONFIG.CANNON_OPENING_RADIUS,
         SIMULATION_CONFIG.CANNON_SEGMENTS
@@ -141,7 +291,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         color: 0xffffff,
         transparent: true,
         opacity: 0.0,
-      }); // Tornado transparente
+      });
       const hole = new THREE.Mesh(holeGeometry, holeMaterial);
       hole.position.set(
         SIMULATION_CONFIG.SOURCE_POSITION +
@@ -197,23 +347,20 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
 
     if (!scene || !camera || !renderer || !controls || !label) return;
 
-    const scenarioConfig = getScenarioConfig(scenarioNumber);
+    const scenarioConfig = getSimulationConfig(scenarioNumber);
 
-    // Definição do ângulo de emissão novamente para uso neste escopo
-    const emissionAngle = THREE.MathUtils.degToRad(15); // Certifique-se de que este valor corresponde ao usado anteriormente
+    const emissionAngle = THREE.MathUtils.degToRad(15);
 
     const createParticle = () => {
       const theta = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
       const phi = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
 
-      // Definição da velocidade da partícula
       const velocity = new THREE.Vector3(
         SIMULATION_CONFIG.BASE_SPEED * Math.cos(theta) * Math.cos(phi),
-        SIMULATION_CONFIG.BASE_SPEED * Math.sin(phi) + 1, // Adiciona componente Y para inclinar a direção
+        SIMULATION_CONFIG.BASE_SPEED * Math.sin(phi) + 1,
         SIMULATION_CONFIG.BASE_SPEED * Math.sin(theta) * Math.cos(phi)
       );
 
-      // Define a posição inicial da partícula no centro do canhão
       const initialPosition = new THREE.Vector3(
         SIMULATION_CONFIG.SOURCE_POSITION +
           (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(emissionAngle),
@@ -225,7 +372,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         velocity.clone().normalize(),
         initialPosition.clone(),
         SIMULATION_CONFIG.PARTICLE_SIZE,
-        0xef4444, // Mantém a cor vermelha para as partículas
+        0xef4444,
         SIMULATION_CONFIG.HEAD_LENGTH,
         SIMULATION_CONFIG.HEAD_WIDTH
       );
@@ -243,7 +390,6 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
     const updateParticles = (deltaTime) => {
       const scaledDelta = deltaTime * SIMULATION_CONFIG.TIME_SCALE;
 
-      // Remove partículas antigas primeiro
       while (particlesRef.current.length >= scenarioConfig.maxParticles) {
         const oldestParticle = particlesRef.current.shift();
         scene.remove(oldestParticle);
@@ -255,7 +401,6 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         const { velocity, position, lastPosition } = particle.userData;
         position.copy(lastPosition).add(velocity.clone().multiplyScalar(scaledDelta));
 
-        // Verifica colisão com a barreira
         if (
           position.x >= -0.1 &&
           position.x <= 0.1 &&
@@ -270,8 +415,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             velocity.x *= -1;
             position.x = velocity.x > 0 ? 0.11 : -0.11;
           } else if (
-            rand <
-            scenarioConfig.ricochetProbability + scenarioConfig.transmissionProbability
+            (rand, scenarioConfig.ricochetProbability + scenarioConfig.transmissionProbability)
           ) {
             position.x = velocity.x > 0 ? 0.11 : -0.11;
           } else {
@@ -299,7 +443,6 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         const deltaTime = Math.min((currentTime - lastUpdateTimeRef.current) * 0.001, 0.1);
         lastUpdateTimeRef.current = currentTime;
 
-        // Garante criação contínua de partículas
         if (currentTime - lastParticleTimeRef.current >= scenarioConfig.particleInterval) {
           const particle = createParticle();
           particlesRef.current.push(particle);
@@ -325,7 +468,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
     };
   }, [isPlaying, scenarioNumber]);
 
-  function createTextCanvas(text) {
+  const createTextCanvas = (text) => {
     const canvas = document.createElement('canvas');
     canvas.width = 512;
     canvas.height = 128;
@@ -338,7 +481,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       context.fillText(text, 256, 64);
     }
     return canvas;
-  }
+  };
 
   return (
     <div
@@ -354,5 +497,6 @@ Scenario4.propTypes = {
   scenarioNumber: PropTypes.number,
 };
 
+export const getScenarioConfig = () => SCENARIO_CONFIG;
 export { SCENARIO_CONFIG };
-export default Scenario4;
+export default React.memo(Scenario4);
