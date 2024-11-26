@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { generateScenarioContent } from '../../services/openai';
 
+// Configuração inicial sempre com "Carregando..."
 let SCENARIO_CONFIG = {
   id: 'scenario5',
   title: 'Cenário II: Experimento de Rutherford',
@@ -29,6 +30,37 @@ let SCENARIO_CONFIG = {
       isCorrect: false,
     },
   ],
+};
+
+// Função para resetar a configuração
+const resetConfig = () => {
+  SCENARIO_CONFIG = {
+    id: 'scenario5',
+    title: 'Cenário II: Experimento de Rutherford',
+    question: 'Carregando...',
+    options: [
+      {
+        id: 'option1',
+        text: 'Carregando...',
+        isCorrect: true,
+      },
+      {
+        id: 'option2',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option3',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option4',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+    ],
+  };
 };
 
 const SIMULATION_CONFIG = {
@@ -87,7 +119,6 @@ const SIMULATION_CONFIG = {
   maxParticles: 500,
   reflectionProbability: 0.55,
 };
-
 const scenarioPrompt = `
 Gere uma questão de múltipla escolha sobre o seguinte cenário:
 
@@ -139,6 +170,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
   const particles = useRef([]);
   const animationFrameRef = useRef(null);
   const hasUpdated = useRef(false);
+  const fetchingRef = useRef(false); // Novo ref para controlar o estado de fetch
 
   const updateConfig = useCallback((newConfig) => {
     if (!hasUpdated.current) {
@@ -151,22 +183,42 @@ const Scenario5 = ({ isPlaying, isDark }) => {
 
   useEffect(() => {
     const fetchScenarioContent = async () => {
-      if (hasUpdated.current) return; // Evitar múltiplas chamadas
-      try {
-        console.log('📤 Enviando prompt para OpenAI');
-        const generatedContent = await generateScenarioContent(scenarioPrompt);
-        console.log('📥 Resposta recebida da OpenAI:', generatedContent);
+      // Previne múltiplas chamadas simultâneas
+      if (hasUpdated.current || fetchingRef.current) return;
 
-        if (generatedContent) {
-          updateConfig(generatedContent);
-        }
+      try {
+        fetchingRef.current = true;
+
+        // Reset a configuração antes de fazer a nova requisição
+        resetConfig();
+
+        // Força um pequeno delay para garantir que o estado "Carregando..." seja renderizado
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Faz a chamada à API
+        const generatedContent = await generateScenarioContent(scenarioPrompt);
+        updateConfig(generatedContent);
       } catch (error) {
         console.error('🔴 Erro ao buscar conteúdo:', error);
+        updateConfig(SCENARIO_CONFIG);
+      } finally {
+        fetchingRef.current = false;
       }
     };
 
+    // Reset inicial
+    resetConfig();
+
+    // Inicia o fetch
     fetchScenarioContent();
-  }, [updateConfig]);
+
+    // Cleanup function
+    return () => {
+      resetConfig();
+      hasUpdated.current = false;
+      fetchingRef.current = false;
+    };
+  }, [updateConfig]); // Dependência única
 
   useEffect(() => {
     const canvas = canvasRef.current;

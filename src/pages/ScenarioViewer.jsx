@@ -53,47 +53,28 @@ function ScenarioViewer() {
   const [initialStart, setInitialStart] = useState(true);
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [scenarioConfig, setScenarioConfig] = useState(SCENARIOS[scenarioId]?.config);
+  const [scenarioConfig, setScenarioConfig] = useState(null); // Inicializa como null
 
-  // Único useEffect para gerenciar atualizações do config
+  // Modifique o useEffect para não fazer polling
   useEffect(() => {
-    let checkConfigInterval;
-
     if (SCENARIOS[scenarioId]) {
       console.log('🎲 Iniciando monitoramento do cenário:', scenarioId);
 
-      const checkAndUpdateConfig = () => {
-        const currentConfig = SCENARIOS[scenarioId].config;
-        console.log('🔍 Verificando config atual:', currentConfig);
+      // Reseta o estado quando o cenário muda
+      setScenarioConfig(null);
+      setOptions([]);
 
-        if (currentConfig.question !== 'Carregando...') {
-          console.log('🔄 Config atualizada:', currentConfig);
-          setScenarioConfig(currentConfig);
-          setOptions(prepareOptions(currentConfig));
-          if (checkConfigInterval) {
-            clearInterval(checkConfigInterval);
-          }
-        }
-      };
-
-      // Checar imediatamente
-      checkAndUpdateConfig();
-
-      // Continuar checando até receber a resposta
-      checkConfigInterval = setInterval(checkAndUpdateConfig, 100);
-
-      // Adicionar listener para eventos de atualização
       const handleConfigUpdate = () => {
         console.log('📢 Evento de atualização recebido');
-        checkAndUpdateConfig();
+        const currentConfig = SCENARIOS[scenarioId].config;
+        console.log('🔄 Config atualizada:', currentConfig);
+        setScenarioConfig(currentConfig);
+        setOptions(prepareOptions(currentConfig));
       };
 
       window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
 
       return () => {
-        if (checkConfigInterval) {
-          clearInterval(checkConfigInterval);
-        }
         window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
       };
     }
