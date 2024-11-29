@@ -6,11 +6,17 @@ import WelcomeModal from './components/WelcomeModal';
 import CongratulationModal from './components/CongratulationModal';
 import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from './components/scenarios/Scenario1';
 import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from './components/scenarios/Scenario2';
-import Scenario3, { SCENARIO_CONFIG as SCENARIO_3_CONFIG } from './components/scenarios/Scenario3';
-import Scenario4, { SCENARIO_CONFIG as SCENARIO_4_CONFIG } from './components/scenarios/Scenario4';
+
+import Scenario3, {
+  getScenarioConfig as getScenario3Config,
+} from './components/scenarios/Scenario3';
+import Scenario4, {
+  getScenarioConfig as getScenario4Config,
+} from './components/scenarios/Scenario4';
 import Scenario5, {
   getScenarioConfig as getScenario5Config,
 } from './components/scenarios/Scenario5';
+
 import PropTypes from 'prop-types';
 import Footer from './components/Footer';
 
@@ -27,16 +33,22 @@ const AVAILABLE_SCENARIOS = [
     config: SCENARIO_2_CONFIG,
     renderComponent: (props) => <Scenario2 {...props} />,
   },
+
   {
     id: 'scenario3',
     component: Scenario3,
-    config: SCENARIO_3_CONFIG,
+    get config() {
+      return getScenario3Config();
+    },
     renderComponent: (props) => <Scenario3 {...props} />,
   },
+
   {
     id: 'scenario4',
     component: Scenario4,
-    config: SCENARIO_4_CONFIG,
+    get config() {
+      return getScenario4Config();
+    },
     renderComponent: (props) => <Scenario4 {...props} />,
   },
   {
