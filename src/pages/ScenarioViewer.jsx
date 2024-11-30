@@ -73,7 +73,7 @@ function ScenarioViewer() {
   const { scenarioId } = useParams();
   const [isDark, setIsDark] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15.0);
+  const [timeLeft, setTimeLeft] = useState(20.0);
   const [initialStart, setInitialStart] = useState(true);
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -132,7 +132,7 @@ function ScenarioViewer() {
 
     if (isPlaying) {
       if (initialStart) {
-        setTimeLeft(15.0);
+        setTimeLeft(20.0);
         setInitialStart(false);
       }
 
@@ -160,7 +160,7 @@ function ScenarioViewer() {
     setIsPlaying(!isPlaying);
     if (!isPlaying) {
       setSelectedOption(null);
-      setTimeLeft(15.0);
+      setTimeLeft(20.0);
       setInitialStart(true);
     }
   };

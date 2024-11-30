@@ -90,8 +90,8 @@ const SIMULATION_CONFIG = {
     height: 200,
   },
   poles: {
-    positive: { x: 250, y: 30 },
-    negative: { x: 250, y: 270 },
+    positive: { x: 250, y: 270 },
+    negative: { x: 250, y: 30 },
   },
   screen: {
     x: 370,
@@ -136,15 +136,18 @@ Observa-se que:
 - Partículas ALFA (AZUIS) são atraídas para o polo negativo
 - Partículas GAMA não sofrem alteração na trajetória
 
-A questão deve avaliar se o aluno sabe identificar as partículas ALFA, BETA e GAMA e explicar por que elas sofrem ou não alteração em suas trajetórias.
+A questão deve avaliar se o aluno sabe identificar as partículas ALFA, BETA e GAMA e explicar por que elas sofrem ou não alteração em suas trajetórias. IMPORTANTE: Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário ler tudo e marcar a resposta correta.
+
 
 Requisitos:
 - A questão deve ter 4 alternativas
 - Apenas uma alternativa deve estar correta
-- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
+- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis e uma alternativa deve ser absurda e totalmente nada a ver irônica ou engraçada.
 - Foque no comportamento das partículas em campos elétricos
 - Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
 - Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
+- Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário ler tudo e marcar a resposta correta.
+
 
 Retorne a resposta EXATAMENTE neste formato JSON:
 {

@@ -93,20 +93,21 @@ São mostrados dois cenários de atenuação de radiação em 3D:
 - No segundo cenário, a radiação interage com uma barreira com alto coeficiente de atenuação
 - Em ambos os cenários, a fonte radioativa é a mesma e emite partículas com a mesma energia
 
-A questão deve avaliar se o aluno compreende os conceitos de atenuação de radiação e interação com a matéria.
+A questão deve avaliar se o aluno compreende os conceitos de atenuação de radiação e interação com a matéria. IMPORTANTE: Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário ler tudo e marcar a resposta correta.
 
 Requisitos:
 - A questão deve ter 4 alternativas
 - Apenas uma alternativa deve estar correta
-- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
+- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis e uma alternativa deve ser absurda e totalmente nada a ver irônica ou engraçada.
 - Foque na física da interação da radiação com a matéria
 - Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
 - Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
+- Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário ler tudo e marcar a resposta correta.
 
 Retorne a resposta EXATAMENTE neste formato JSON:
 {
   "id": "scenario1",
-  "title": "Cenário I: Atenuação de Radiação",
+  "title": "",
   "question": "[Sua pergunta aqui]",
   "options": [
     {

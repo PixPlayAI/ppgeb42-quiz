@@ -81,19 +81,21 @@ const SIMULATION_CONFIG = {
 
 const scenarioPrompt = `Gere uma questão de múltipla escolha sobre o seguinte cenário:
 Nesta simulação 2D, são mostrados dois cenários de atenuação de radiação:
-- No primeiro cenário há uma emissão intensa com muitas partículas
-- No segundo cenário há uma emissão mais controlada e espaçada
+- No primeiro cenário há uma emissão intensa com muitas partículas a partir da fonte, bem mais radioativa.
+- No segundo cenário há uma emissão bem menor e e espaçada da fonte, bem menos radioativa.
 - Em ambos os casos as partículas podem ser refletidas, transmitidas ou absorvidas pela barreira
 
-A questão deve avaliar se o aluno compreende as aplicações práticas dessas diferentes intensidades de radiação.
+A questão deve avaliar se o aluno compreende as aplicações práticas dessas diferentes intensidades de radiação, por exemplo uma baixa radiação pode ser aplicável a um exame diagnóstico (ex.: cintilografia) já alta radiação pode ser aplicável a um Tratamento ( ex.: radioterapia). IMPORTANTE: Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário ler tudo e marcar a resposta correta.
 
 Requisitos:
 - A questão deve ter 4 alternativas
 - Apenas uma alternativa deve estar correta
-- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
+- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis e uma alternativa deve ser absurda e totalmente nada a ver irônica ou engraçada.
 - Foque em aplicações práticas e na escolha adequada de diferentes radioisótopos
 - Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
 - Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
+- Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário ler tudo e marcar a resposta correta.
+
 
 Retorne a resposta EXATAMENTE neste formato JSON:
 {
