@@ -3,7 +3,10 @@ import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from '../components/scenarios/Scenario1';
-import Scenario2, { SCENARIO_CONFIG as SCENARIO_2_CONFIG } from '../components/scenarios/Scenario2';
+
+import Scenario2, {
+  getScenarioConfig as getScenario2Config,
+} from '../components/scenarios/Scenario2';
 
 import Scenario3, {
   getScenarioConfig as getScenario3Config,
@@ -24,10 +27,13 @@ const SCENARIOS = {
     config: SCENARIO_1_CONFIG,
     renderComponent: (props) => <Scenario1 {...props} />,
   },
+
   Scenario2: {
     id: 'scenario2',
     component: Scenario2,
-    config: SCENARIO_2_CONFIG,
+    get config() {
+      return getScenario2Config();
+    },
     renderComponent: (props) => <Scenario2 {...props} />,
   },
 
