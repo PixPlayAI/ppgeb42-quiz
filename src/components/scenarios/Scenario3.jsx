@@ -1,33 +1,72 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { generateScenarioContent } from '../../services/openai';
 
-const SCENARIO_CONFIG = {
+// Configuração inicial sempre com "Carregando..."
+let SCENARIO_CONFIG = {
   id: 'scenario3',
   title: 'Cenário II: Atenuação de Radiação 2D',
-  question:
-    'Compare os cenários e identifique possíveis aplicações considerando a quantidade de radiação emitida:',
+  question: 'Carregando...',
   options: [
     {
-      id: 'correct',
-      text: 'A intensa emissão do primeiro cenário sugere fonte para radioterapia externa com Cobalto-60, enquanto a menor emissão do segundo sugere uso em cintilografia com Tecnécio-99m.',
+      id: 'option1',
+      text: 'Carregando...',
       isCorrect: true,
     },
     {
-      id: 'plausible1',
-      text: 'A intensa emissão do segundo cenário sugere fonte de Irídio-192 usada em braquiterapia HDR, enquanto a menor emissão do primeiro indica uso diagnóstico com Gálio-68.',
+      id: 'option2',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
-      id: 'plausible2',
-      text: 'A diferença na quantidade de radiação detectada é causada pelos tipos de blindagem, sendo chumbo no primeiro e concreto no segundo.',
+      id: 'option3',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
-      id: 'absurd',
-      text: 'A maior emissão do primeiro cenário poderia ser partículas alfa de Trítio, enquanto a menor do segundo seria radiação gama de Césio-137.',
+      id: 'option4',
+      text: 'Carregando...',
       isCorrect: false,
     },
   ],
+  successMessage: 'Carregando...',
+  detailedExplanation: 'Carregando...',
+};
+
+// Variável para controlar a inicialização
+let isInitialized = false;
+
+// Função para resetar a configuração
+const resetConfig = () => {
+  SCENARIO_CONFIG = {
+    id: 'scenario3',
+    title: 'Cenário II: Atenuação de Radiação 2D',
+    question: 'Carregando...',
+    options: [
+      {
+        id: 'option1',
+        text: 'Carregando...',
+        isCorrect: true,
+      },
+      {
+        id: 'option2',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option3',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option4',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+    ],
+    successMessage: 'Carregando...',
+    detailedExplanation: 'Carregando...',
+  };
 };
 
 const SIMULATION_CONFIG = {
@@ -40,20 +79,140 @@ const SIMULATION_CONFIG = {
   },
 };
 
-const getScenarioConfig = (scenarioNumber) => {
+const scenarioPrompt = `Gere uma questão de múltipla escolha sobre o seguinte cenário:
+Nesta simulação 2D, são mostrados dois cenários de atenuação de radiação:
+- No primeiro cenário há uma emissão intensa com muitas partículas
+- No segundo cenário há uma emissão mais controlada e espaçada
+- Em ambos os casos as partículas podem ser refletidas, transmitidas ou absorvidas pela barreira
+
+A questão deve avaliar se o aluno compreende as aplicações práticas dessas diferentes intensidades de radiação.
+
+Requisitos:
+- A questão deve ter 4 alternativas
+- Apenas uma alternativa deve estar correta
+- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
+- Foque em aplicações práticas e na escolha adequada de diferentes radioisótopos
+- Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
+- Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
+
+Retorne a resposta EXATAMENTE neste formato JSON:
+{
+  "id": "scenario3",
+  "title": "Cenário II: Atenuação de Radiação 2D",
+  "question": "[Sua pergunta aqui]",
+  "options": [
+    {
+      "id": "option1",
+      "text": "[Texto da primeira alternativa]",
+      "isCorrect": true
+    },
+    {
+      "id": "option2",
+      "text": "[Texto da segunda alternativa]",
+      "isCorrect": false
+    },
+    {
+      "id": "option3",
+      "text": "[Texto da terceira alternativa]",
+      "isCorrect": false
+    },
+    {
+      "id": "option4",
+      "text": "[Texto da quarta alternativa]",
+      "isCorrect": false
+    }
+  ],
+  "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou], não cite alternativa abcd ou 1234 pois elas são embaralhadas",
+  "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta], não cite alternativa abcd ou 1234 pois elas são embaralhadas"
+}`;
+
+const getSimulationConfig = (scenarioNumber) => {
   return {
-    particleInterval: scenarioNumber === 1 ? 5 : 50, // Cenário 1 emite 10x mais partículas
+    particleInterval: scenarioNumber === 1 ? 5 : 50,
     maxParticles: scenarioNumber === 1 ? 400 : 40,
-    ricochetProbability: 0.8, // Alta probabilidade de ricochete para ambos
+    ricochetProbability: 0.8,
     transmissionProbability: 0.15,
   };
 };
-
 const Scenario3 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   const canvasRef = useRef(null);
   const particlesRef = useRef([]);
   const animationFrameRef = useRef(null);
   const lastParticleTimeRef = useRef(0);
+
+  // Função para atualizar a configuração e disparar evento
+  const updateConfig = useCallback((newConfig) => {
+    SCENARIO_CONFIG = newConfig;
+    window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
+  }, []);
+
+  useEffect(() => {
+    const fetchScenarioContent = async () => {
+      // Se já foi inicializado, não faz nada
+      if (isInitialized) return;
+
+      try {
+        isInitialized = true; // Marca como inicializado antes da chamada
+        const generatedContent = await generateScenarioContent(scenarioPrompt);
+
+        // Verifica se o conteúdo foi gerado corretamente
+        if (!generatedContent.successMessage || !generatedContent.detailedExplanation) {
+          generatedContent.successMessage =
+            'Parabéns! Você demonstrou compreender como diferentes intensidades de radiação podem ser aplicadas em contextos específicos, considerando tanto aspectos de segurança quanto eficácia terapêutica.';
+          generatedContent.detailedExplanation =
+            'A resposta correta considera que:\n' +
+            '1. Diferentes intensidades de radiação são apropriadas para diferentes aplicações\n' +
+            '2. A escolha do radioisótopo deve considerar não só a intensidade mas também o tipo de radiação\n' +
+            '3. A atenuação da radiação é um fator crucial para segurança e eficácia\n\n' +
+            'As outras alternativas estão incorretas porque:\n' +
+            '- Confundem as aplicações apropriadas para cada intensidade\n' +
+            '- Apresentam conceitos errôneos sobre atenuação e blindagem\n' +
+            '- Fazem associações inadequadas entre radioisótopos e suas aplicações';
+        }
+
+        // Atualiza a configuração
+        SCENARIO_CONFIG = {
+          ...generatedContent,
+          id: 'scenario3',
+          title: 'Cenário II: Atenuação de Radiação 2D',
+        };
+
+        // Dispara o evento de atualização
+        updateConfig(SCENARIO_CONFIG);
+      } catch (error) {
+        console.error('🔴 Erro ao buscar conteúdo:', error);
+        isInitialized = false; // Reset em caso de erro
+
+        // Configuração de fallback
+        const fallbackConfig = {
+          ...SCENARIO_CONFIG,
+          successMessage:
+            'Parabéns! Você demonstrou compreender como diferentes intensidades de radiação podem ser aplicadas em contextos específicos, considerando tanto aspectos de segurança quanto eficácia terapêutica.',
+          detailedExplanation:
+            'A resposta correta considera que:\n' +
+            '1. Diferentes intensidades de radiação são apropriadas para diferentes aplicações\n' +
+            '2. A escolha do radioisótopo deve considerar não só a intensidade mas também o tipo de radiação\n' +
+            '3. A atenuação da radiação é um fator crucial para segurança e eficácia\n\n' +
+            'As outras alternativas estão incorretas porque:\n' +
+            '- Confundem as aplicações apropriadas para cada intensidade\n' +
+            '- Apresentam conceitos errôneos sobre atenuação e blindagem\n' +
+            '- Fazem associações inadequadas entre radioisótopos e suas aplicações',
+        };
+
+        // Atualiza a configuração com fallback
+        SCENARIO_CONFIG = fallbackConfig;
+        updateConfig(SCENARIO_CONFIG);
+      }
+    };
+
+    resetConfig();
+    fetchScenarioContent();
+
+    // Cleanup
+    return () => {
+      // Não reseta isInitialized no cleanup para manter o cache
+    };
+  }, [updateConfig]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,7 +221,6 @@ const Scenario3 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
     const createParticle = () => {
       const angle = Math.random() * 2 * Math.PI;
       const speed = 2;
-
       return {
         x: SIMULATION_CONFIG.startPoint.x,
         y: SIMULATION_CONFIG.startPoint.y + (Math.random() - 0.5) * 20,
@@ -76,7 +234,7 @@ const Scenario3 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
 
     const animate = () => {
       const currentTime = Date.now();
-      const config = getScenarioConfig(scenarioNumber);
+      const config = getSimulationConfig(scenarioNumber); // Atualizar aqui
 
       if (isPlaying) {
         if (
@@ -141,7 +299,6 @@ const Scenario3 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             particle.y <= SIMULATION_CONFIG.barrier.y + SIMULATION_CONFIG.barrier.height
           ) {
             const rand = Math.random();
-
             if (rand < config.ricochetProbability) {
               particle.vx = -particle.vx;
               particle.x =
@@ -203,5 +360,12 @@ Scenario3.propTypes = {
   scenarioNumber: PropTypes.number,
 };
 
+// Função para obter a configuração do cenário
+// Função para obter a configuração do cenário
+export const getScenarioConfig = () => SCENARIO_CONFIG;
+
+// Exporta a configuração como constante
 export { SCENARIO_CONFIG };
+
+// Exporta o componente memoizado
 export default React.memo(Scenario3);
