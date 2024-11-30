@@ -162,14 +162,9 @@ const Scenario2 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           generatedContent.successMessage =
             'Parabéns! Você demonstrou compreender corretamente os conceitos de atenuação de radiação e como diferentes materiais e espessuras afetam a penetração da radiação.';
           generatedContent.detailedExplanation =
-            'A resposta correta considera que:\n' +
-            '1. O coeficiente de atenuação linear (μ) é uma propriedade do material\n' +
-            '2. Quanto maior o coeficiente de atenuação, maior a blindagem\n' +
-            '3. A atenuação depende tanto do material quanto da espessura\n\n' +
-            'As outras alternativas estão incorretas porque:\n' +
-            '- Confundem os conceitos de intensidade e atenuação\n' +
-            '- Interpretam erroneamente a relação entre espessura e atenuação\n' +
-            '- Fazem associações equivocadas entre tipos de radiação e penetração';
+            'A resposta correta considera que o coeficiente de atenuação linear (μ) é uma propriedade intrínseca do material e que um valor maior de μ está associado a uma capacidade maior de blindagem contra radiação. ' +
+            'Além disso, a atenuação não depende apenas das propriedades do material, mas também da espessura da barreira utilizada. ' +
+            'As outras respostas estão incorretas porque confundem os conceitos de intensidade e atenuação, interpretam erroneamente a relação entre espessura e atenuação, ou apresentam associações equivocadas entre tipos de radiação e sua capacidade de penetração.';
         }
 
         // Atualiza a configuração
@@ -191,14 +186,10 @@ const Scenario2 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           successMessage:
             'Parabéns! Você demonstrou compreender corretamente os conceitos de atenuação de radiação e como diferentes materiais e espessuras afetam a penetração da radiação.',
           detailedExplanation:
-            'A resposta correta considera que:\n' +
-            '1. O coeficiente de atenuação linear (μ) é uma propriedade do material\n' +
-            '2. Quanto maior o coeficiente de atenuação, maior a blindagem\n' +
-            '3. A atenuação depende tanto do material quanto da espessura\n\n' +
-            'As outras alternativas estão incorretas porque:\n' +
-            '- Confundem os conceitos de intensidade e atenuação\n' +
-            '- Interpretam erroneamente a relação entre espessura e atenuação\n' +
-            '- Fazem associações equivocadas entre tipos de radiação e penetração',
+            'A resposta correta considera que o coeficiente de atenuação linear (μ) é uma propriedade fundamental do material, determinando sua capacidade de bloquear ou absorver radiação. ' +
+            'Materiais com um coeficiente de atenuação maior oferecem maior eficiência de blindagem. ' +
+            'Além disso, a atenuação depende não apenas do material utilizado, mas também da espessura da barreira, que influencia diretamente na redução da radiação transmitida. ' +
+            'As outras respostas estão incorretas porque confundem conceitos como intensidade e atenuação, interpretam de forma errada a relação entre espessura e atenuação, ou fazem associações equivocadas sobre os tipos de radiação e sua capacidade de penetração.',
         };
 
         // Atualiza a configuração com fallback

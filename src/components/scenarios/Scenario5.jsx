@@ -207,15 +207,11 @@ const Scenario5 = ({ isPlaying, isDark }) => {
           // Se não tiver as mensagens, adiciona mensagens padrão relacionadas ao contexto
           generatedContent.successMessage = `Parabéns! Você demonstrou compreender corretamente como as partículas alfa, beta e gama interagem com campos elétricos. Sua resposta mostra que você entende que partículas carregadas são defletidas de acordo com sua carga, enquanto partículas neutras não são afetadas.`;
 
-          generatedContent.detailedExplanation = `No experimento de Rutherford:
-1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
-2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
-3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
-
-As outras alternativas estão incorretas porque:
-- Confundem as cargas das partículas
-- Não consideram corretamente a interação entre cargas elétricas
-- Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`;
+          generatedContent.detailedExplanation =
+            'No experimento de Rutherford, partículas alfa, que possuem carga positiva, são atraídas para o polo negativo devido à interação com a força elétrica. ' +
+            'Por outro lado, partículas beta, que possuem carga negativa, são atraídas para o polo positivo devido à força elétrica em sentido oposto. ' +
+            'As partículas gama, por serem neutras, não sofrem deflexão, já que não possuem carga elétrica. ' +
+            'As outras respostas estão incorretas porque apresentam confusão sobre as cargas das partículas, não consideram corretamente a interação entre cargas elétricas ou ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem.';
         }
 
         // Atualiza a configuração
@@ -236,15 +232,11 @@ As outras alternativas estão incorretas porque:
           ...SCENARIO_CONFIG,
           successMessage: `Parabéns! Você demonstrou compreender corretamente como as partículas alfa, beta e gama interagem com campos elétricos. Sua resposta mostra que você entende que partículas carregadas são defletidas de acordo com sua carga, enquanto partículas neutras não são afetadas.`,
 
-          detailedExplanation: `No experimento de Rutherford:
-1. Partículas alfa (positivas) são atraídas para o polo negativo devido à força elétrica
-2. Partículas beta (negativas) são atraídas para o polo positivo devido à força elétrica oposta
-3. Partículas gama (neutras) não sofrem deflexão por não terem carga elétrica
-
-As outras alternativas estão incorretas porque:
-- Confundem as cargas das partículas
-- Não consideram corretamente a interação entre cargas elétricas
-- Ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem`,
+          detailedExplanation:
+            'No experimento de Rutherford, partículas alfa, que possuem carga positiva, são atraídas para o polo negativo devido à interação com a força elétrica. ' +
+            'Partículas beta, com carga negativa, são atraídas para o polo positivo, já que a força elétrica atua em sentido oposto. ' +
+            'Partículas gama, por serem neutras, não sofrem deflexão, pois não possuem carga elétrica. ' +
+            'As outras respostas estão incorretas porque confundem as características das partículas em relação às suas cargas, desconsideram a interação correta entre cargas elétricas ou ignoram o princípio básico de que cargas opostas se atraem e cargas iguais se repelem.',
         };
 
         // Atualiza a configuração com fallback

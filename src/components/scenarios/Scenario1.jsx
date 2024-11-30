@@ -176,14 +176,10 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           generatedContent.successMessage =
             'Parabéns! Você demonstrou compreender os princípios físicos da interação da radiação com a matéria e como diferentes materiais afetam a atenuação da radiação.';
           generatedContent.detailedExplanation =
-            'A resposta correta considera que:\n' +
-            '1. A atenuação depende das propriedades do material\n' +
-            '2. O mesmo feixe de radiação interage diferentemente com materiais distintos\n' +
-            '3. O coeficiente de atenuação é uma propriedade intrínseca do material\n\n' +
-            'As outras alternativas estão incorretas porque:\n' +
-            '- Confundem as propriedades dos materiais com as da radiação\n' +
-            '- Não consideram corretamente os mecanismos de interação\n' +
-            '- Propõem explicações fisicamente inconsistentes';
+            'A resposta correta considera que a atenuação está diretamente relacionada às propriedades do material, como o coeficiente de atenuação, que determina o quanto o material pode bloquear ou absorver a radiação. ' +
+            'Além disso, o mesmo feixe de radiação interage de maneira diferente com materiais distintos, devido às suas características intrínsecas. ' +
+            'As outras respostas estão incorretas porque confundem as propriedades dos materiais com as da radiação, ou não interpretam corretamente os mecanismos de interação envolvidos. ' +
+            'Algumas ainda apresentam conceitos que não são fisicamente consistentes, como sugerir resultados que não são possíveis segundo os princípios físicos.';
         }
 
         // Atualiza a configuração
@@ -205,14 +201,9 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           successMessage:
             'Parabéns! Você demonstrou compreender os princípios físicos da interação da radiação com a matéria e como diferentes materiais afetam a atenuação da radiação.',
           detailedExplanation:
-            'A resposta correta considera que:\n' +
-            '1. A atenuação depende das propriedades do material\n' +
-            '2. O mesmo feixe de radiação interage diferentemente com materiais distintos\n' +
-            '3. O coeficiente de atenuação é uma propriedade intrínseca do material\n\n' +
-            'As outras alternativas estão incorretas porque:\n' +
-            '- Confundem as propriedades dos materiais com as da radiação\n' +
-            '- Não consideram corretamente os mecanismos de interação\n' +
-            '- Propõem explicações fisicamente inconsistentes',
+            'A resposta correta considera que a atenuação está diretamente ligada às propriedades do material, sendo influenciada por fatores como o coeficiente de atenuação, que determina a capacidade do material de absorver ou bloquear a radiação. ' +
+            'O mesmo feixe de radiação pode interagir de maneiras distintas dependendo das características intrínsecas do material atravessado. ' +
+            'As outras respostas estão incorretas porque apresentam conceitos equivocados, como confundir as propriedades do material com as da radiação, ignorar os mecanismos corretos de interação ou sugerir interpretações que não são fisicamente consistentes.',
         };
 
         // Atualiza a configuração com fallback
