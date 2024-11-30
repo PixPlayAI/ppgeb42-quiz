@@ -39,6 +39,14 @@ import Scenario9, {
   getScenarioConfig as getScenario9Config,
 } from './components/scenarios/Scenario9';
 
+import Scenario10, {
+  getScenarioConfig as getScenario10Config,
+} from './components/scenarios/Scenario10';
+
+import Scenario11, {
+  getScenarioConfig as getScenario11Config,
+} from './components/scenarios/Scenario11';
+
 import PropTypes from 'prop-types';
 import Footer from './components/Footer';
 
@@ -118,6 +126,22 @@ const AVAILABLE_SCENARIOS = [
       return getScenario9Config();
     },
     renderComponent: (props) => <Scenario9 {...props} />,
+  },
+  {
+    id: 'scenario10',
+    component: Scenario10,
+    get config() {
+      return getScenario10Config();
+    },
+    renderComponent: (props) => <Scenario10 {...props} />,
+  },
+  {
+    id: 'scenario11',
+    component: Scenario11,
+    get config() {
+      return getScenario11Config();
+    },
+    renderComponent: (props) => <Scenario11 {...props} />,
   },
 ];
 
