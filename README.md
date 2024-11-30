@@ -39,7 +39,7 @@ O **Quiz Monte Carlo** é um webapp interativo desenvolvido especialmente para a
 
 Para vencer o quiz, você precisa:
 
-- 🎯 Acertar 5 questões consecutivas
+- 🎯 Acertar 3 questões consecutivas
 - ⏱️ Responder cada questão em até 20 segundos
 - 📝 Selecionar a alternativa correta que explica os fenômenos observados
 

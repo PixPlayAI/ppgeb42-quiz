@@ -294,10 +294,10 @@ function App() {
     setHasAnswered(true);
     setLastAnswerCorrect(option.isCorrect);
     if (option.isCorrect) {
-      const newScore = Math.min(score + 1, 5);
+      const newScore = Math.min(score + 1, 3);
       setScore(newScore);
 
-      if (newScore === 5) {
+      if (newScore === 3) {
         setShowCongratulations(true);
       }
     }
@@ -315,7 +315,7 @@ function App() {
       return;
     }
 
-    if (score === 5) {
+    if (score === 3) {
       return;
     }
 

@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 
 const CONGRATULATION_MESSAGES = [
-  '🎯 Extraordinário! Você demonstrou um domínio impressionante da Simulação de Monte Carlo. Com certeza o Prof. William ficará orgulhoso desse desempenho excepcional!',
-  '🎓 Brilhante! Não preciso nem fazer simulações de Monte Carlo para saber que você vai tirar nota máxima na disciplina PPGEB42. Seu conhecimento é notável!',
-  '⚡ Fenomenal! Sua compreensão dos conceitos de Monte Carlo é tão precisa quanto os resultados das nossas simulações. Parabéns pelo desempenho extraordinário!',
-  '🌟 Impressionante! Você domina a física médica e Monte Carlo como poucos. A turma 2024/02 tem um verdadeiro especialista!',
-  '🏆 Excepcional! Seu entendimento sobre transporte de radiação e Monte Carlo é digno de aplausos. Continue brilhando assim!',
-  '🎨 Magnífico! Você interpretou cada cenário com maestria. Sua compreensão da Simulação de Monte Carlo na medicina é verdadeiramente notável!',
+  '🎯 Extraordinário! Três acertos seguidos demonstram seu domínio impressionante da Simulação de Monte Carlo. Com certeza o Prof. William ficará orgulhoso desse desempenho excepcional!',
+  '🎓 Brilhante! Três respostas perfeitas! Não preciso nem fazer simulações de Monte Carlo para saber que você vai tirar nota máxima na disciplina PPGEB42. Seu conhecimento é notável!',
+  '⚡ Fenomenal! Sua sequência de três acertos mostra que sua compreensão dos conceitos de Monte Carlo é tão precisa quanto os resultados das nossas simulações. Parabéns pelo desempenho extraordinário!',
+  '🌟 Impressionante! Com três acertos consecutivos, você provou que domina a física médica e Monte Carlo como poucos. A turma 2024/02 tem um verdadeiro especialista!',
+  '🏆 Excepcional! Três respostas corretas seguidas mostram que seu entendimento sobre transporte de radiação e Monte Carlo é digno de aplausos. Continue brilhando assim!',
+  '🎨 Magnífico! Você interpretou cada cenário com maestria e alcançou três acertos perfeitos. Sua compreensão da Simulação de Monte Carlo na medicina é verdadeiramente notável!',
 ];
 
 const CongratulationModal = ({ isOpen, onClose, isDark }) => {
@@ -171,7 +171,7 @@ const CongratulationModal = ({ isOpen, onClose, isDark }) => {
               ${isDark ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white'}
             `}
             >
-              Pontuação Máxima: 5/5 ⭐
+              Pontuação Máxima: 3/3 ⭐
             </div>
           </div>
 

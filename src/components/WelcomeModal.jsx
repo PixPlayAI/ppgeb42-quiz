@@ -82,7 +82,7 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
                     <li>
                       Acertar{' '}
                       <span className={`font-bold ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
-                        5 questões consecutivas
+                        3 questões consecutivas
                       </span>{' '}
                       🏆
                     </li>

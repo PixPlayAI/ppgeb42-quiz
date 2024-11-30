@@ -16,6 +16,16 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark, scenarioConf
     }
   };
 
+  const getSuccessMessage = () => {
+    if (score === 3) {
+      return '🌟 Incrível! Você completou o desafio com três acertos consecutivos!';
+    }
+    return (
+      scenarioConfig?.successMessage ||
+      'Excelente compreensão dos conceitos físicos! Continue assim!'
+    );
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div
@@ -39,7 +49,11 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark, scenarioConf
                 isSuccess ? 'text-green-500' : 'text-yellow-500'
               }`}
             >
-              {isSuccess ? '🎉 Parabéns!' : '😔 Não foi dessa vez!'}
+              {isSuccess
+                ? score === 3
+                  ? '🎉 Vitória Completa!'
+                  : '🎉 Parabéns!'
+                : '😔 Não foi dessa vez!'}
             </div>
           </div>
 
@@ -47,13 +61,7 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark, scenarioConf
           <div className="text-sm md:text-base px-2 md:px-4 text-left">
             {isSuccess ? (
               <>
-                {scenarioConfig?.successMessage ? (
-                  <p className="mb-4">{scenarioConfig.successMessage}</p>
-                ) : (
-                  <p className="mb-4">
-                    Excelente compreensão dos conceitos físicos! Continue assim!
-                  </p>
-                )}
+                <p className="mb-4">{getSuccessMessage()}</p>
               </>
             ) : (
               <>
@@ -77,6 +85,7 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark, scenarioConf
               <>
                 <span className="font-bold">Pontuação atual:</span>
                 <span className="font-bold text-xl text-green-500">{score}</span>
+                {score === 3 && <span className="ml-2 text-green-500">🏆</span>}
               </>
             ) : (
               <span className="font-bold text-yellow-500">
@@ -99,7 +108,7 @@ const FeedbackModal = ({ isOpen, onClose, isSuccess, score, isDark, scenarioConf
               }
             `}
           >
-            {isSuccess ? 'Continuar' : 'Tentar Novamente'}
+            {isSuccess ? (score === 3 ? 'Finalizar' : 'Continuar') : 'Tentar Novamente'}
           </button>
         </div>
       </div>
