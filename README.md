@@ -29,8 +29,10 @@ O **Quiz Monte Carlo** é um webapp interativo desenvolvido especialmente para a
    - Analise os padrões de movimento e interação
 
 3. **Resposta e Avaliação** ✍️
+   - Uma pergunta e quatro alternativas são geradas por Inteligência Artificial
    - Escolha a alternativa que melhor explica os fenômenos observados
-   - Você tem 15 segundos para responder cada questão
+   - Você tem 20 segundos para responder cada questão
+   - A geração das perguntas pode levar alguns segundos
    - Feedback imediato sobre sua resposta
 
 ### 🏆 Objetivos e Regras
@@ -38,7 +40,7 @@ O **Quiz Monte Carlo** é um webapp interativo desenvolvido especialmente para a
 Para vencer o quiz, você precisa:
 
 - 🎯 Acertar 5 questões consecutivas
-- ⏱️ Responder cada questão em até 15 segundos
+- ⏱️ Responder cada questão em até 20 segundos
 - 📝 Selecionar a alternativa correta que explica os fenômenos observados
 
 ⚠️ **Atenção**: Se errar uma questão ou o tempo acabar:
@@ -55,6 +57,7 @@ Para vencer o quiz, você precisa:
 - 💫 Lucide Icons
 - 🎉 Canvas Confetti
 - 🌙 Tema Dark/Light
+- 🤖 Inteligência Artificial para geração das questões
 
 ## 🚀 Como Executar o Projeto
 

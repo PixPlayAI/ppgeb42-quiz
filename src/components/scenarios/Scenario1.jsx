@@ -1,34 +1,74 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { generateScenarioContent } from '../../services/openai';
 
-const SCENARIO_CONFIG = {
+// Configuração inicial sempre com "Carregando..."
+let SCENARIO_CONFIG = {
   id: 'scenario1',
   title: 'Cenário I: Atenuação de Radiação',
-  question: 'Analise os dois cenários e escolha a alternativa correta:',
+  question: 'Carregando...',
   options: [
     {
-      id: 'correct',
-      text: 'A fonte radioativa emite a mesma intensidade de radiação nos dois cenários, porém a blindagem do cenário II apresenta coeficiente de atenuação linear (μ) que é bem maior do que o valor da blindagem do cenário I',
+      id: 'option1',
+      text: 'Carregando...',
       isCorrect: true,
     },
     {
-      id: 'plausible1',
-      text: 'A fonte radioativa do cenário II emite o dobro da intensidade de radiação em relação ao cenário I, mantendo os mesmos coeficientes de atenuação linear (μ) nas blindagens',
+      id: 'option2',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
-      id: 'plausible2',
-      text: 'A blindagem do cenário II possui espessura que é metade da espessura da blindagem do cenário I, mantendo o mesmo material atenuador',
+      id: 'option3',
+      text: 'Carregando...',
       isCorrect: false,
     },
     {
-      id: 'absurd',
-      text: 'A radiação no cenário II é composta por partículas alfa, enquanto no cenário I são fótons gama, por isso há diferença na penetração',
+      id: 'option4',
+      text: 'Carregando...',
       isCorrect: false,
     },
   ],
+  successMessage: 'Carregando...',
+  detailedExplanation: 'Carregando...',
+};
+
+// Variável para controlar a inicialização
+let isInitialized = false;
+
+// Função para resetar a configuração
+const resetConfig = () => {
+  SCENARIO_CONFIG = {
+    id: 'scenario1',
+    title: 'Cenário I: Atenuação de Radiação',
+    question: 'Carregando...',
+    options: [
+      {
+        id: 'option1',
+        text: 'Carregando...',
+        isCorrect: true,
+      },
+      {
+        id: 'option2',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option3',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+      {
+        id: 'option4',
+        text: 'Carregando...',
+        isCorrect: false,
+      },
+    ],
+    successMessage: 'Carregando...',
+    detailedExplanation: 'Carregando...',
+  };
 };
 
 const SIMULATION_CONFIG = {
@@ -47,7 +87,54 @@ const SIMULATION_CONFIG = {
   CANNON_OPENING_RADIUS: 0.05,
 };
 
-const getScenarioConfig = (scenarioNumber) => {
+const scenarioPrompt = `Gere uma questão de múltipla escolha sobre o seguinte cenário:
+São mostrados dois cenários de atenuação de radiação em 3D:
+- No primeiro cenário, a radiação interage com uma barreira com baixo coeficiente de atenuação
+- No segundo cenário, a radiação interage com uma barreira com alto coeficiente de atenuação
+- Em ambos os cenários, a fonte radioativa é a mesma e emite partículas com a mesma energia
+
+A questão deve avaliar se o aluno compreende os conceitos de atenuação de radiação e interação com a matéria.
+
+Requisitos:
+- A questão deve ter 4 alternativas
+- Apenas uma alternativa deve estar correta
+- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis
+- Foque na física da interação da radiação com a matéria
+- Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
+- Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
+
+Retorne a resposta EXATAMENTE neste formato JSON:
+{
+  "id": "scenario1",
+  "title": "Cenário I: Atenuação de Radiação",
+  "question": "[Sua pergunta aqui]",
+  "options": [
+    {
+      "id": "option1",
+      "text": "[Texto da primeira alternativa]",
+      "isCorrect": true
+    },
+    {
+      "id": "option2",
+      "text": "[Texto da segunda alternativa]",
+      "isCorrect": false
+    },
+    {
+      "id": "option3",
+      "text": "[Texto da terceira alternativa]",
+      "isCorrect": false
+    },
+    {
+      "id": "option4",
+      "text": "[Texto da quarta alternativa]",
+      "isCorrect": false
+    }
+  ],
+  "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou], não cite alternativa abcd ou 1234 pois elas são embaralhadas",
+  "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta], não cite alternativa abcd ou 1234 pois elas são embaralhadas"
+}`;
+
+const getSimulationConfig = (scenarioNumber) => {
   return {
     particleInterval: 5, // Mesma taxa de emissão para ambos os cenários
     maxParticles: 400, // Mesmo limite de partículas
@@ -67,6 +154,80 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   const rendererRef = useRef(null);
   const controlsRef = useRef(null);
   const labelRef = useRef(null);
+
+  // Função para atualizar a configuração e disparar evento
+  const updateConfig = useCallback((newConfig) => {
+    SCENARIO_CONFIG = newConfig;
+    window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
+  }, []);
+
+  useEffect(() => {
+    const fetchScenarioContent = async () => {
+      // Se já foi inicializado, não faz nada
+      if (isInitialized) return;
+
+      try {
+        isInitialized = true; // Marca como inicializado antes da chamada
+        const generatedContent = await generateScenarioContent(scenarioPrompt);
+
+        // Verifica se o conteúdo foi gerado corretamente
+        if (!generatedContent.successMessage || !generatedContent.detailedExplanation) {
+          generatedContent.successMessage =
+            'Parabéns! Você demonstrou compreender os princípios físicos da interação da radiação com a matéria e como diferentes materiais afetam a atenuação da radiação.';
+          generatedContent.detailedExplanation =
+            'A resposta correta considera que:\n' +
+            '1. A atenuação depende das propriedades do material\n' +
+            '2. O mesmo feixe de radiação interage diferentemente com materiais distintos\n' +
+            '3. O coeficiente de atenuação é uma propriedade intrínseca do material\n\n' +
+            'As outras alternativas estão incorretas porque:\n' +
+            '- Confundem as propriedades dos materiais com as da radiação\n' +
+            '- Não consideram corretamente os mecanismos de interação\n' +
+            '- Propõem explicações fisicamente inconsistentes';
+        }
+
+        // Atualiza a configuração
+        SCENARIO_CONFIG = {
+          ...generatedContent,
+          id: 'scenario1',
+          title: 'Cenário I: Atenuação de Radiação',
+        };
+
+        // Dispara o evento de atualização
+        updateConfig(SCENARIO_CONFIG);
+      } catch (error) {
+        console.error('🔴 Erro ao buscar conteúdo:', error);
+        isInitialized = false; // Reset em caso de erro
+
+        // Configuração de fallback
+        const fallbackConfig = {
+          ...SCENARIO_CONFIG,
+          successMessage:
+            'Parabéns! Você demonstrou compreender os princípios físicos da interação da radiação com a matéria e como diferentes materiais afetam a atenuação da radiação.',
+          detailedExplanation:
+            'A resposta correta considera que:\n' +
+            '1. A atenuação depende das propriedades do material\n' +
+            '2. O mesmo feixe de radiação interage diferentemente com materiais distintos\n' +
+            '3. O coeficiente de atenuação é uma propriedade intrínseca do material\n\n' +
+            'As outras alternativas estão incorretas porque:\n' +
+            '- Confundem as propriedades dos materiais com as da radiação\n' +
+            '- Não consideram corretamente os mecanismos de interação\n' +
+            '- Propõem explicações fisicamente inconsistentes',
+        };
+
+        // Atualiza a configuração com fallback
+        SCENARIO_CONFIG = fallbackConfig;
+        updateConfig(SCENARIO_CONFIG);
+      }
+    };
+
+    resetConfig();
+    fetchScenarioContent();
+
+    // Cleanup
+    return () => {
+      // Não reseta isInitialized no cleanup para manter o cache
+    };
+  }, [updateConfig]);
 
   useEffect(() => {
     if (!sceneRef.current) {
@@ -97,7 +258,6 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       directionalLight.position.set(5, 5, 5);
       scene.add(directionalLight);
 
-      // Criação do canhão
       const cannonGeometry = new THREE.CylinderGeometry(
         SIMULATION_CONFIG.CANNON_RADIUS,
         SIMULATION_CONFIG.CANNON_RADIUS,
@@ -111,11 +271,9 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       });
       const cannon = new THREE.Mesh(cannonGeometry, cannonMaterial);
 
-      // Rotaciona o canhão para apontar na mesma direção das partículas emitidas
-      const emissionAngle = THREE.MathUtils.degToRad(15); // Ângulo de 15 graus
-      cannon.rotation.z = Math.PI / 2 + emissionAngle; // Ajuste do ângulo do canhão
+      const emissionAngle = THREE.MathUtils.degToRad(15);
+      cannon.rotation.z = Math.PI / 2 + emissionAngle;
 
-      // Define a posição do canhão
       const cannonPosition = new THREE.Vector3(
         SIMULATION_CONFIG.SOURCE_POSITION +
           (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(emissionAngle),
@@ -124,21 +282,6 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       );
       cannon.position.copy(cannonPosition);
       scene.add(cannon);
-
-      // Removendo o buraco preto (origem preta)
-      // const holeGeometry = new THREE.CircleGeometry(
-      //   SIMULATION_CONFIG.CANNON_OPENING_RADIUS,
-      //   SIMULATION_CONFIG.CANNON_SEGMENTS
-      // );
-      // const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
-      // const hole = new THREE.Mesh(holeGeometry, holeMaterial);
-      // hole.position.set(
-      //   SIMULATION_CONFIG.SOURCE_POSITION + SIMULATION_CONFIG.CANNON_LENGTH * Math.cos(emissionAngle),
-      //   SIMULATION_CONFIG.CANNON_LENGTH * Math.sin(emissionAngle),
-      //   0
-      // );
-      // hole.rotation.y = Math.PI / 2;
-      // scene.add(hole);
 
       const barrier = new THREE.Mesh(
         new THREE.BoxGeometry(0.2, 2.5, 1.0),
@@ -185,21 +328,18 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
 
     if (!scene || !camera || !renderer || !controls || !label) return;
 
-    const scenarioConfig = getScenarioConfig(scenarioNumber);
+    const scenarioConfig = getSimulationConfig(scenarioNumber);
 
     const createParticle = () => {
       const theta = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
       const phi = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
 
-      // Definição da velocidade da partícula
-      // Modificado para emitir partículas em um ângulo em relação ao eixo X
       const velocity = new THREE.Vector3(
         SIMULATION_CONFIG.BASE_SPEED * Math.cos(theta) * Math.cos(phi),
-        SIMULATION_CONFIG.BASE_SPEED * Math.sin(phi) + 1, // Adiciona componente Y para inclinar a direção
+        SIMULATION_CONFIG.BASE_SPEED * Math.sin(phi) + 1,
         SIMULATION_CONFIG.BASE_SPEED * Math.sin(theta) * Math.cos(phi)
       );
 
-      // Define a posição inicial da partícula no centro do canhão
       const position = new THREE.Vector3(
         SIMULATION_CONFIG.SOURCE_POSITION +
           (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(THREE.MathUtils.degToRad(15)),
@@ -229,7 +369,6 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
     const updateParticles = (deltaTime) => {
       const scaledDelta = deltaTime * SIMULATION_CONFIG.TIME_SCALE;
 
-      // Remove partículas antigas primeiro
       while (particlesRef.current.length >= scenarioConfig.maxParticles) {
         const oldestParticle = particlesRef.current.shift();
         scene.remove(oldestParticle);
@@ -338,5 +477,11 @@ Scenario1.propTypes = {
   scenarioNumber: PropTypes.number,
 };
 
+// Função para obter a configuração do cenário
+export const getScenarioConfig = () => SCENARIO_CONFIG;
+
+// Exporta a configuração como constante
 export { SCENARIO_CONFIG };
-export default Scenario1;
+
+// Exporta o componente memoizado
+export default React.memo(Scenario1);

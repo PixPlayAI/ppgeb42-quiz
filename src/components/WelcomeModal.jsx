@@ -10,16 +10,16 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
         className={`
           ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}
           rounded-lg p-4 md:p-8 w-full max-w-2xl mx-auto shadow-xl transform transition-all
-          relative my-4 md:my-0-
+          relative my-4 md:my-0
         `}
       >
         {/* Ícone superior - escondido em mobile */}
         <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 hidden md:block">
           <div
             className={`
-            ${isDark ? 'bg-gray-700' : 'bg-white'}
-            rounded-full p-4 shadow-lg
-          `}
+              ${isDark ? 'bg-gray-700' : 'bg-white'}
+              rounded-full p-4 shadow-lg
+            `}
           >
             <InfoIcon size={32} className={isDark ? 'text-blue-400' : 'text-blue-500'} />
           </div>
@@ -71,7 +71,7 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
                   <ul className="space-y-1 md:space-y-2 list-disc list-inside ml-2">
                     <li>Serão apresentados dois cenários de simulação lado a lado</li>
                     <li>Observe atentamente o comportamento das partículas em cada cenário</li>
-                    <li>Analise atentamente as diferenças entre os cenários</li>
+                    <li>Uma pergunta e quatro alternativas serão geradas por IA</li>
                     <li>Escolha a alternativa que melhor explica os fenômenos observados</li>
                   </ul>
                 </div>
@@ -89,7 +89,7 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
                     <li>
                       Responder cada questão em até{' '}
                       <span className={`font-bold ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
-                        15 segundos
+                        20 segundos
                       </span>{' '}
                       ⏱️
                     </li>
@@ -101,7 +101,7 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
                     className={`font-medium text-sm md:text-base ${isDark ? 'text-yellow-300' : 'text-yellow-600'}`}
                   >
                     ⚠️ Importante: Se errar uma questão ou o tempo acabar, a pontuação volta a zero
-                    e um novo desafio começará!
+                    e um novo desafio começará! A geração das perguntas pode levar alguns segundos.
                   </p>
                 </div>
               </div>

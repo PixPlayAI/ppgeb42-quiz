@@ -4,7 +4,10 @@ import { Moon, Sun } from 'lucide-react';
 import FeedbackModal from '../components/FeedbackModal';
 import WelcomeModal from '../components/WelcomeModal';
 import CongratulationModal from '../components/CongratulationModal';
-import Scenario1, { SCENARIO_CONFIG as SCENARIO_1_CONFIG } from '../components/scenarios/Scenario1';
+
+import Scenario1, {
+  getScenarioConfig as getScenario1Config,
+} from '../components/scenarios/Scenario1';
 
 import Scenario2, {
   getScenarioConfig as getScenario2Config,
@@ -29,7 +32,9 @@ const AVAILABLE_SCENARIOS = [
   {
     id: 'scenario1',
     component: Scenario1,
-    config: SCENARIO_1_CONFIG,
+    get config() {
+      return getScenario1Config();
+    },
     renderComponent: (props) => <Scenario1 {...props} />,
   },
 
