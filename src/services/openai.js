@@ -2,6 +2,7 @@
 import axios from 'axios';
 
 export const generateScenarioContent = async (scenarioPrompt) => {
+  //Temporariamente aqui a chave, mas o correto é deixar sem o prefixo vite
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
   if (!apiKey) {
