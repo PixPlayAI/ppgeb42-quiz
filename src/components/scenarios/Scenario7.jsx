@@ -1,12 +1,12 @@
-// src/components/scenarios/Scenario6.jsx
+// src/components/scenarios/Scenario7.jsx
 import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { generateScenarioContent } from '../../services/openai';
 
 // Configuração inicial sempre com "Carregando..."
 let SCENARIO_CONFIG = {
-  id: 'scenario6',
-  title: 'Cenário II: Colimação de Partículas',
+  id: 'scenario7',
+  title: 'Cenário II: Colimação em Física Médica',
   question: 'Carregando...',
   options: [
     {
@@ -40,8 +40,8 @@ let isInitialized = false;
 // Função para resetar a configuração
 const resetConfig = () => {
   SCENARIO_CONFIG = {
-    id: 'scenario6',
-    title: 'Cenário II: Colimação de Partículas',
+    id: 'scenario7',
+    title: 'Cenário II: Colimação em Física Médica',
     question: 'Carregando...',
     options: [
       {
@@ -78,22 +78,23 @@ No experimento de colimação, partículas radioativas são emitidas de uma font
 - No Cenário I, o anteparo é feito de madeira ou outro material inapropriado para colimação.
 - No Cenário II, o anteparo é feito de chumbo ou outro material apropriado para colimação.
 
-A questão deve avaliar se o aluno sabe identificar o papel do material do anteparo usado na colimação das partículas e explicar por que a colimação é melhor em um cenário do que no outro. IMPORTANTE: Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário, ler tudo e marcar a resposta correta.
+A questão deve avaliar se o aluno sabe o motivo de se usar uma colimação, que pode ser para a segurança do paciente, aumento da eficácia de um tratamento radioterápico para irradiar um local específico ou para obter uma radiografia dental específica. Você também pode explorar outras aplicações na física médica relacionadas à colimação na pergunta, usando uma linguagem adequada.
+
+IMPORTANTE: Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário, ler tudo e marcar a resposta correta.
 
 Requisitos:
 - A questão deve ter 4 alternativas
 - Apenas uma alternativa deve estar correta
-- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis e uma alternativa deve ser absurda e totalmente nada a ver irônica ou engraçada.
-- Foque no comportamento das partículas em campos elétricos
+- As alternativas incorretas devem ser plausíveis mas claramente distinguíveis e uma alternativa deve ser absurda e totalmente nada a ver, irônica ou engraçada.
+- Foque nas aplicações da colimação em física médica
 - Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar
 - Inclua uma explicação detalhada da resposta correta e porque as outras alternativas estão erradas
-- Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário ler tudo e marcar a resposta correta.
-
+- Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário, ler tudo e marcar a resposta correta.
 
 Retorne a resposta EXATAMENTE neste formato JSON:
 {
-  "id": "scenario5",
-  "title": "Cenário II: Experimento de Rutherford",
+  "id": "scenario7",
+  "title": "Cenário II: Colimação em Física Médica",
   "question": "[Sua pergunta aqui]",
   "options": [
     {
@@ -169,7 +170,7 @@ const getRealisticScatteringAngle = (config) => {
   return gaussian() * config.maxDeflectionAngle * config.scatteringStrength;
 };
 
-const Scenario6 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
+const Scenario7 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   const canvasRef = useRef(null);
   const particlesRef = useRef([]);
   const animationFrameRef = useRef(null);
@@ -247,22 +248,19 @@ const Scenario6 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         // Verifica se o conteúdo foi gerado corretamente
         if (!generatedContent.successMessage || !generatedContent.detailedExplanation) {
           generatedContent.successMessage =
-            'Parabéns! Você demonstrou compreender corretamente os conceitos de colimação e como diferentes materiais afetam a trajetória das partículas.';
+            'Parabéns! Você compreende que a colimação é essencial para direcionar a radiação ao local específico, aumentando a eficácia do tratamento e a segurança do paciente.';
           generatedContent.detailedExplanation =
-            'A resposta correta considera que:\n' +
-            '1. O material apropriado (chumbo ou outro material adequado) tem um alto coeficiente de atenuação, permitindo uma colimação eficaz das partículas.\n' +
-            '2. O material inapropriado (madeira ou outro material inadequado) tem um baixo coeficiente de atenuação, resultando em maior espalhamento das partículas.\n\n' +
-            'As outras alternativas estão incorretas porque:\n' +
-            '- Confundem os materiais e seus efeitos na colimação.\n' +
-            '- Não consideram corretamente a relação entre o coeficiente de atenuação e a colimação.\n' +
-            '- Fazem associações equivocadas entre tipos de materiais e seus usos em colimação.';
+            'A resposta correta destaca que a colimação é usada para concentrar a radiação em uma área específica, minimizando a exposição desnecessária. As outras alternativas estão incorretas pois:\n' +
+            '- Não relacionam a colimação com a segurança ou eficácia do tratamento.\n' +
+            '- Sugerem aplicações não relacionadas à física médica.\n' +
+            '- Apresentam conceitos absurdos ou humorísticos que não se aplicam.';
         }
 
         // Atualiza a configuração
         SCENARIO_CONFIG = {
           ...generatedContent,
-          id: 'scenario6',
-          title: 'Cenário II: Colimação de Partículas',
+          id: 'scenario7',
+          title: 'Cenário II: Colimação em Física Médica',
         };
 
         // Dispara o evento de atualização
@@ -275,15 +273,12 @@ const Scenario6 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         const fallbackConfig = {
           ...SCENARIO_CONFIG,
           successMessage:
-            'Parabéns! Você demonstrou compreender corretamente os conceitos de colimação e como diferentes materiais afetam a trajetória das partículas.',
+            'Parabéns! Você compreende que a colimação é essencial para direcionar a radiação ao local específico, aumentando a eficácia do tratamento e a segurança do paciente.',
           detailedExplanation:
-            'A resposta correta considera que:\n' +
-            '1. O material apropriado (chumbo ou outro material adequado) tem um alto coeficiente de atenuação, permitindo uma colimação eficaz das partículas.\n' +
-            '2. O material inapropriado (madeira ou outro material inadequado) tem um baixo coeficiente de atenuação, resultando em maior espalhamento das partículas.\n\n' +
-            'As outras alternativas estão incorretas porque:\n' +
-            '- Confundem os materiais e seus efeitos na colimação.\n' +
-            '- Não consideram corretamente a relação entre o coeficiente de atenuação e a colimação.\n' +
-            '- Fazem associações equivocadas entre tipos de materiais e seus usos em colimação.',
+            'A resposta correta destaca que a colimação é usada para concentrar a radiação em uma área específica, minimizando a exposição desnecessária. As outras alternativas estão incorretas pois:\n' +
+            '- Não relacionam a colimação com a segurança ou eficácia do tratamento.\n' +
+            '- Sugerem aplicações não relacionadas à física médica.\n' +
+            '- Apresentam conceitos absurdos ou humorísticos que não se aplicam.',
         };
 
         // Atualiza a configuração com fallback
@@ -547,7 +542,7 @@ const Scenario6 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
   );
 };
 
-Scenario6.propTypes = {
+Scenario7.propTypes = {
   isPlaying: PropTypes.bool.isRequired,
   isDark: PropTypes.bool.isRequired,
   scenarioNumber: PropTypes.number,
@@ -560,4 +555,4 @@ export const getScenarioConfig = () => SCENARIO_CONFIG;
 export { SCENARIO_CONFIG };
 
 // Exporta o componente memoizado
-export default React.memo(Scenario6);
+export default React.memo(Scenario7);

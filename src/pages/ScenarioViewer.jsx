@@ -27,6 +27,18 @@ import Scenario6, {
   getScenarioConfig as getScenario6Config,
 } from '../components/scenarios/Scenario6';
 
+import Scenario7, {
+  getScenarioConfig as getScenario7Config,
+} from '../components/scenarios/Scenario7';
+
+import Scenario8, {
+  getScenarioConfig as getScenario8Config,
+} from '../components/scenarios/Scenario8';
+
+import Scenario9, {
+  getScenarioConfig as getScenario9Config,
+} from '../components/scenarios/Scenario9';
+
 const SCENARIOS = {
   Scenario1: {
     id: 'scenario1',
@@ -78,6 +90,30 @@ const SCENARIOS = {
       return getScenario6Config();
     },
     renderComponent: (props) => <Scenario6 {...props} />,
+  },
+  Scenario7: {
+    id: 'scenario7',
+    component: Scenario7,
+    get config() {
+      return getScenario7Config();
+    },
+    renderComponent: (props) => <Scenario7 {...props} />,
+  },
+  Scenario8: {
+    id: 'scenario8',
+    component: Scenario8,
+    get config() {
+      return getScenario8Config();
+    },
+    renderComponent: (props) => <Scenario8 {...props} />,
+  },
+  Scenario9: {
+    id: 'scenario9',
+    component: Scenario9,
+    get config() {
+      return getScenario9Config();
+    },
+    renderComponent: (props) => <Scenario9 {...props} />,
   },
 };
 
