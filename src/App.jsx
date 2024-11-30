@@ -193,21 +193,19 @@ function App() {
   useEffect(() => {
     if (showSimulations) {
       const currentScenario = getCurrentScenario();
-      if (currentScenario.id === 'scenario5') {
-        const handleConfigUpdate = () => {
-          const updatedConfig = currentScenario.config;
-          setOptions(prepareOptions(updatedConfig));
-        };
 
-        window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
-        handleConfigUpdate();
+      const handleConfigUpdate = () => {
+        const updatedConfig = currentScenario.config;
+        setOptions(prepareOptions(updatedConfig));
+      };
 
-        return () => {
-          window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
-        };
-      } else {
-        setOptions(prepareOptions(currentScenario.config));
-      }
+      window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
+      // Call immediately to set initial options
+      handleConfigUpdate();
+
+      return () => {
+        window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
+      };
     }
   }, [currentQueueIndex, showSimulations]);
 
