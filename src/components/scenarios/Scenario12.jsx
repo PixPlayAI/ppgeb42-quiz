@@ -13,8 +13,8 @@ import {
 
 // Configuração inicial sempre com "Carregando..."
 let SCENARIO_CONFIG = {
-  id: 'scenario11',
-  title: 'Cenário 11: Aplicações de Radioisótopos',
+  id: 'scenario12',
+  title: 'Cenário 12: Espectros de Energia de Radioisótopos',
   question: 'Carregando...',
   options: [
     {
@@ -48,8 +48,8 @@ let isInitialized = false;
 // Função para resetar a configuração
 const resetConfig = () => {
   SCENARIO_CONFIG = {
-    id: 'scenario11',
-    title: 'Cenário 11: Aplicações de Radioisótopos',
+    id: 'scenario12',
+    title: 'Cenário 12: Espectros de Energia de Radioisótopos',
     question: 'Carregando...',
     options: [
       {
@@ -83,16 +83,16 @@ const getScenarioPrompt = (scenarioNumber) => {
   const scenarioDescription =
     scenarioNumber === 1
       ? `
-Neste cenário, é apresentado um gráfico de decaimento radioativo de um radioisótopo utilizado em radioterapia. O gráfico mostra a diminuição da atividade ao longo do tempo, sem revelar o nome do composto. A meia-vida deste radioisótopo é de alguns dias.
+Neste cenário, é apresentado um gráfico de espectro de energia de um radioisótopo utilizado em **radioterapia**. O gráfico mostra picos de energia mais elevados, sem revelar o nome do composto. As energias características deste radioisótopo estão na faixa de **200 keV a 500 keV**.
 `
       : `
-Neste cenário, é apresentado um gráfico de decaimento radioativo de um radioisótopo utilizado em diagnóstico por imagem. O gráfico mostra a diminuição da atividade ao longo do tempo, sem revelar o nome do composto. A meia-vida deste radioisótopo é de algumas horas.
+Neste cenário, é apresentado um gráfico de espectro de energia de um radioisótopo utilizado em **diagnóstico por imagem**. O gráfico mostra picos de energia mais baixos, sem revelar o nome do composto. As energias características deste radioisótopo estão na faixa de **100 keV a 200 keV**.
 `;
 
   return `Gere uma questão de múltipla escolha sobre o seguinte cenário:
 ${scenarioDescription}
 
-A questão deve avaliar se o aluno compreende a relação entre a meia-vida dos cenários e suas aplicações clínicas em diagnóstico e terapia, identificando qual cenário é mais adequado para determinado uso com base em sua meia-vida.
+A questão deve avaliar se o aluno compreende a relação entre as energias dos cenários e suas aplicações clínicas em diagnóstico e terapia, identificando qual cenário é mais adequado para determinado uso com base em seu espectro de energia.
 
 IMPORTANTE: Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário, ler tudo e marcar a resposta correta.
 
@@ -101,15 +101,15 @@ Requisitos:
 - Apenas uma alternativa deve estar correta.
 - As alternativas incorretas devem ser plausíveis mas claramente distinguíveis, e necessariamente uma alternativa deve ser absurda e totalmente nada a ver, irônica ou engraçada.
 - As alternativas devem mencionar "Cenário 1" e "Cenário 2" conforme apropriado.
-- Foque em aplicações práticas e na escolha adequada de diferentes cenários com base na meia-vida.
+- Foque em aplicações práticas e na escolha adequada de diferentes cenários com base no espectro de energia.
 - Inclua uma mensagem de parabéns que reforce o conceito específico que o aluno demonstrou dominar.
 - Inclua uma explicação detalhada da resposta correta e por que as outras alternativas estão erradas.
 - Os textos devem ser curtos pois o candidato terá aproximadamente 20 segundos para ver o cenário, ler tudo e marcar a resposta correta.
 
 Retorne a resposta EXATAMENTE neste formato JSON:
 {
-  "id": "scenario11",
-  "title": "Cenário 11: Aplicações de Radioisótopos",
+  "id": "scenario12",
+  "title": "Cenário 12: Espectros de Energia de Radioisótopos",
   "question": "[Sua pergunta aqui]",
   "options": [
     {
@@ -138,7 +138,7 @@ Retorne a resposta EXATAMENTE neste formato JSON:
 }`;
 };
 
-const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
+const Scenario12 = ({ isDark, scenarioNumber = 1 }) => {
   // Função para atualizar a configuração e disparar evento
   const updateConfig = useCallback((newConfig) => {
     SCENARIO_CONFIG = newConfig;
@@ -161,15 +161,15 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
           !generatedContent.detailedExplanation
         ) {
           generatedContent.successMessage =
-            'Parabéns! Você compreendeu como a meia-vida dos cenários influencia sua aplicação clínica.';
+            'Parabéns! Você compreendeu como as energias dos cenários influenciam suas aplicações clínicas.';
           generatedContent.detailedExplanation =
-            'A resposta correta relaciona a meia-vida dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com meias-vidas mais longas são adequados para terapia, enquanto aqueles com meias-vidas mais curtas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.';
+            'A resposta correta relaciona o espectro de energia dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com energias mais altas são adequados para terapia, enquanto aqueles com energias mais baixas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.';
         }
 
         // Atualiza a configuração
         SCENARIO_CONFIG = {
           ...generatedContent,
-          id: 'scenario11',
+          id: 'scenario12',
           title: 'MonteCarloQuiz.online PPGEB42 turma 2024/02',
         };
 
@@ -183,9 +183,9 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
         const fallbackConfig = {
           ...SCENARIO_CONFIG,
           successMessage:
-            'Parabéns! Você compreendeu como a meia-vida dos cenários influencia sua aplicação clínica.',
+            'Parabéns! Você compreendeu como as energias dos cenários influenciam suas aplicações clínicas.',
           detailedExplanation:
-            'A resposta correta relaciona a meia-vida dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com meias-vidas mais longas são adequados para terapia, enquanto aqueles com meias-vidas mais curtas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.',
+            'A resposta correta relaciona o espectro de energia dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com energias mais altas são adequados para terapia, enquanto aqueles com energias mais baixas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.',
         };
 
         // Atualiza a configuração com fallback
@@ -203,34 +203,35 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
     };
   }, [updateConfig, scenarioNumber]);
 
-  // Função de cálculo de decaimento
-  const calculateDecay = (halfLife, time) => {
-    const decayConstant = Math.log(2) / halfLife;
-    return parseFloat((100 * Math.exp(-decayConstant * time)).toFixed(2));
-  };
-
   // Dados específicos para cada cenário
   const getScenarioData = () => {
     if (scenarioNumber === 1) {
-      // Cenário 1 - Terapia (dias)
+      // Cenário 1 - Terapia (energias mais altas)
       return {
-        decayData: Array.from({ length: 100 }, (_, i) => ({
-          tempo: i,
-          atividade: calculateDecay(8, i), // Meia-vida 8 dias
+        energyData: Array.from({ length: 800 }, (_, i) => ({
+          energia: i,
+          atividade:
+            (i === 316 ? 1000 : i === 468 ? 900 : 100 * Math.exp(-(Math.pow(i - 375, 2) / 400))) +
+            Math.random() * 20,
         })),
       };
     } else {
-      // Cenário 2 - Diagnóstico (horas)
+      // Cenário 2 - Diagnóstico (energias mais baixas)
       return {
-        decayData: Array.from({ length: 48 }, (_, i) => ({
-          tempo: i,
-          atividade: calculateDecay(6, i), // Meia-vida 6 horas
+        energyData: Array.from({ length: 800 }, (_, i) => ({
+          energia: i,
+          atividade:
+            i === 140
+              ? 1000
+              : i === 159
+                ? 900
+                : 100 * Math.exp(-(Math.pow(i - 150, 2) / 200)) + Math.random() * 20,
         })),
       };
     }
   };
 
-  const { decayData } = getScenarioData();
+  const { energyData } = getScenarioData();
   const textColor = isDark ? 'text-gray-200' : 'text-gray-800';
   const gridColor = isDark ? '#374151' : '#e5e7eb';
 
@@ -238,15 +239,15 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
     <div className="space-y-4">
       <div className="h-72 border rounded-lg shadow-md p-4">
         <h3 className={`text-lg font-semibold mb-2 ${textColor}`}>
-          Decaimento Radioativo - Cenário {scenarioNumber}
+          Espectro de Energia - Cenário {scenarioNumber}
         </h3>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={decayData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <LineChart data={energyData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
             <XAxis
-              dataKey="tempo"
+              dataKey="energia"
               label={{
-                value: scenarioNumber === 1 ? 'Tempo (dias)' : 'Tempo (horas)',
+                value: 'Energia (keV)',
                 position: 'insideBottomRight',
                 offset: -10,
                 fill: isDark ? '#e5e7eb' : '#1f2937',
@@ -255,9 +256,8 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
               stroke={isDark ? '#e5e7eb' : '#1f2937'}
             />
             <YAxis
-              domain={[0, 100]}
               label={{
-                value: 'Atividade (%)',
+                value: 'Contagens Relativas',
                 angle: -90,
                 position: 'insideLeft',
                 offset: 0,
@@ -280,7 +280,7 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
   );
 };
 
-Scenario11.propTypes = {
+Scenario12.propTypes = {
   isDark: PropTypes.bool.isRequired,
   scenarioNumber: PropTypes.number,
 };
@@ -292,4 +292,4 @@ export const getScenarioConfig = () => SCENARIO_CONFIG;
 export { SCENARIO_CONFIG };
 
 // Exporta o componente memoizado
-export default React.memo(Scenario11);
+export default React.memo(Scenario12);

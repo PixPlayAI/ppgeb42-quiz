@@ -216,7 +216,7 @@ const Scenario10 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         SCENARIO_CONFIG = {
           ...generatedContent,
           id: 'scenario10',
-          title: 'Cenário 10: Aplicações de Radioisótopos',
+          title: 'MonteCarloQuiz.online PPGEB42 turma 2024/02',
         };
 
         // Dispara o evento de atualização

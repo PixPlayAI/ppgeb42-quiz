@@ -176,7 +176,7 @@ const Scenario3 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         SCENARIO_CONFIG = {
           ...generatedContent,
           id: 'scenario3',
-          title: 'Cenário II: Atenuação de Radiação 2D',
+          title: 'MonteCarloQuiz.online PPGEB42 turma 2024/02',
         };
 
         // Dispara o evento de atualização

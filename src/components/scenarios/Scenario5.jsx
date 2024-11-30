@@ -222,7 +222,7 @@ As outras alternativas estão incorretas porque:
         SCENARIO_CONFIG = {
           ...generatedContent,
           id: 'scenario5',
-          title: 'Cenário II: Experimento de Rutherford',
+          title: 'MonteCarloQuiz.online PPGEB42 turma 2024/02',
         };
 
         // Dispara o evento de atualização

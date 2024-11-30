@@ -260,7 +260,7 @@ const Scenario7 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         SCENARIO_CONFIG = {
           ...generatedContent,
           id: 'scenario7',
-          title: 'Cenário II: Colimação em Física Médica',
+          title: 'MonteCarloQuiz.online PPGEB42 turma 2024/02',
         };
 
         // Dispara o evento de atualização

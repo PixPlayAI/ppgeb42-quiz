@@ -262,7 +262,7 @@ const Scenario6 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         SCENARIO_CONFIG = {
           ...generatedContent,
           id: 'scenario6',
-          title: 'Cenário II: Colimação de Partículas',
+          title: 'MonteCarloQuiz.online PPGEB42 turma 2024/02',
         };
 
         // Dispara o evento de atualização
