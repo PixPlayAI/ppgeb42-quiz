@@ -237,41 +237,51 @@ const Scenario12 = ({ isDark, scenarioNumber = 1 }) => {
 
   return (
     <div className="space-y-4">
-      <div className="h-72 border rounded-lg shadow-md p-4">
+      <div className="h-72 border rounded-lg shadow-md p-6">
         <h3 className={`text-lg font-semibold mb-2 ${textColor}`}>
           Espectro de Energia - Cenário {scenarioNumber}
         </h3>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={energyData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <LineChart data={energyData} margin={{ top: 20, right: 35, bottom: 40, left: 35 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
             <XAxis
               dataKey="energia"
               label={{
                 value: 'Energia (keV)',
-                position: 'insideBottomRight',
-                offset: -10,
+                position: 'insideBottom',
+                offset: -25,
                 fill: isDark ? '#e5e7eb' : '#1f2937',
                 fontSize: 12,
               }}
               stroke={isDark ? '#e5e7eb' : '#1f2937'}
+              tick={{ fontSize: 11 }}
+              domain={[scenarioNumber === 1 ? 200 : 100, scenarioNumber === 1 ? 500 : 200]}
             />
             <YAxis
               label={{
                 value: 'Contagens Relativas',
                 angle: -90,
                 position: 'insideLeft',
-                offset: 0,
+                offset: 15,
                 fill: isDark ? '#e5e7eb' : '#1f2937',
                 fontSize: 12,
               }}
               stroke={isDark ? '#e5e7eb' : '#1f2937'}
+              tick={{ fontSize: 11 }}
             />
-            <Tooltip contentStyle={{ backgroundColor: isDark ? '#1f2937' : '#ffffff' }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                fontSize: '12px',
+                padding: '8px',
+              }}
+            />
             <Line
               type="monotone"
               dataKey="atividade"
-              stroke="#f97316" // Cor laranja
+              stroke="#f97316"
               strokeWidth={2}
+              dot={false}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -284,7 +294,6 @@ Scenario12.propTypes = {
   isDark: PropTypes.bool.isRequired,
   scenarioNumber: PropTypes.number,
 };
-
 // Função para obter a configuração do cenário
 export const getScenarioConfig = () => SCENARIO_CONFIG;
 
