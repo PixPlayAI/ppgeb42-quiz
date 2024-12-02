@@ -92,7 +92,7 @@ Requisitos:
 
 Retorne a resposta EXATAMENTE neste formato JSON:
 {
-  "id": "scenario5",
+  "id": "scenario6",
   "title": "Cenário II: Experimento de Rutherford",
   "question": "[Sua pergunta aqui]",
   "options": [

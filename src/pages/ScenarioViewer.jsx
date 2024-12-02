@@ -51,6 +51,10 @@ import Scenario12, {
   getScenarioConfig as getScenario12Config,
 } from '../components/scenarios/Scenario12';
 
+import Scenario13, {
+  getScenarioConfig as getScenario13Config,
+} from '../components/scenarios/Scenario13';
+
 const SCENARIOS = {
   Scenario1: {
     id: 'scenario1',
@@ -152,6 +156,15 @@ const SCENARIOS = {
       return getScenario12Config();
     },
     renderComponent: (props) => <Scenario12 {...props} />,
+  },
+
+  Scenario13: {
+    id: 'scenario13',
+    component: Scenario13,
+    get config() {
+      return getScenario13Config();
+    },
+    renderComponent: (props) => <Scenario13 {...props} />,
   },
 };
 
