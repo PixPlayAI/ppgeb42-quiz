@@ -211,7 +211,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
             'No experimento de Rutherford, partículas alfa, que possuem carga positiva, são atraídas para o polo negativo devido à interação com a força elétrica. ' +
             'Por outro lado, partículas beta, que possuem carga negativa, são atraídas para o polo positivo devido à força elétrica em sentido oposto. ' +
             'As partículas gama, por serem neutras, não sofrem deflexão, já que não possuem carga elétrica. ' +
-            'As outras respostas estão incorretas porque apresentam confusão sobre as cargas das partículas, não consideram corretamente a interação entre cargas elétricas ou ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
+            'As outras respostas estão incorretas porque apresentam confusão sobre as cargas das partículas, não consideram corretamente a interação entre cargas elétricas ou ignoram o princípio fundamental de que cargas opostas se atraem e cargas iguais se repelem.';
         }
 
         // Atualiza a configuração
@@ -236,7 +236,7 @@ const Scenario5 = ({ isPlaying, isDark }) => {
             'No experimento de Rutherford, partículas alfa, que possuem carga positiva, são atraídas para o polo negativo devido à interação com a força elétrica. ' +
             'Partículas beta, com carga negativa, são atraídas para o polo positivo, já que a força elétrica atua em sentido oposto. ' +
             'Partículas gama, por serem neutras, não sofrem deflexão, pois não possuem carga elétrica. ' +
-            'As outras respostas estão incorretas porque confundem as características das partículas em relação às suas cargas, desconsideram a interação correta entre cargas elétricas ou ignoram o princípio básico de que cargas opostas se atraem e cargas iguais se repelem. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
+            'As outras respostas estão incorretas porque confundem as características das partículas em relação às suas cargas, desconsideram a interação correta entre cargas elétricas ou ignoram o princípio básico de que cargas opostas se atraem e cargas iguais se repelem.',
         };
 
         // Atualiza a configuração com fallback
@@ -369,12 +369,17 @@ const Scenario5 = ({ isPlaying, isDark }) => {
             particle.y >= screen.y &&
             particle.y <= screen.y + screen.height
           ) {
-            const rand = Math.random();
-            if (rand < SIMULATION_CONFIG.reflectionProbability) {
-              particle.vx = -particle.vx;
-              particle.x = screen.x - 1;
+            if (particle.type === 'gamma') {
+              // Partículas gama passam direto pela tela
+              // Não faz nada, continua a atualização normal
             } else {
-              return false;
+              const rand = Math.random();
+              if (rand < SIMULATION_CONFIG.reflectionProbability) {
+                particle.vx = -particle.vx;
+                particle.x = screen.x - 1;
+              } else {
+                return false;
+              }
             }
           }
 
