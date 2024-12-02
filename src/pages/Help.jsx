@@ -65,7 +65,6 @@ const AVAILABLE_SCENARIOS = [
     },
     renderComponent: (props) => <Scenario1 {...props} />,
   },
-
   {
     id: 'scenario2',
     component: Scenario2,
@@ -74,7 +73,6 @@ const AVAILABLE_SCENARIOS = [
     },
     renderComponent: (props) => <Scenario2 {...props} />,
   },
-
   {
     id: 'scenario3',
     component: Scenario3,
@@ -83,7 +81,6 @@ const AVAILABLE_SCENARIOS = [
     },
     renderComponent: (props) => <Scenario3 {...props} />,
   },
-
   {
     id: 'scenario4',
     component: Scenario4,
@@ -100,7 +97,6 @@ const AVAILABLE_SCENARIOS = [
     },
     renderComponent: (props) => <Scenario5 {...props} />,
   },
-
   {
     id: 'scenario6',
     component: Scenario6,
@@ -141,7 +137,6 @@ const AVAILABLE_SCENARIOS = [
     },
     renderComponent: (props) => <Scenario10 {...props} />,
   },
-
   {
     id: 'scenario11',
     component: Scenario11,
@@ -150,7 +145,6 @@ const AVAILABLE_SCENARIOS = [
     },
     renderComponent: (props) => <Scenario11 {...props} />,
   },
-
   {
     id: 'scenario12',
     component: Scenario12,
@@ -197,30 +191,24 @@ function Help() {
   useEffect(() => {
     if (showSimulations) {
       const currentScenario = getCurrentScenario();
-      if (currentScenario.id === 'scenario5') {
-        // Adiciona um listener para atualizar as opções quando o cenário 5 for atualizado
-        const handleConfigUpdate = () => {
-          const updatedConfig = currentScenario.config;
-          console.log('Config atualizada:', updatedConfig); // Debug
-          setOptions(prepareOptions(updatedConfig));
-        };
 
-        window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
-        // Chama imediatamente para configuração inicial
-        handleConfigUpdate();
+      const handleConfigUpdate = () => {
+        const updatedConfig = currentScenario.config;
+        setOptions(prepareOptions(updatedConfig));
+      };
 
-        return () => {
-          window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
-        };
-      } else {
-        setOptions(prepareOptions(currentScenario.config));
-      }
+      window.addEventListener('scenarioConfigUpdated', handleConfigUpdate);
+      // Call immediately to set initial options
+      handleConfigUpdate();
+
+      return () => {
+        window.removeEventListener('scenarioConfigUpdated', handleConfigUpdate);
+      };
     }
   }, [currentQueueIndex, showSimulations]);
 
   const prepareOptions = (scenarioConfig) => {
     if (!scenarioConfig || !scenarioConfig.options) {
-      console.log('Config inválida:', scenarioConfig); // Debug
       return [];
     }
 
@@ -341,7 +329,6 @@ function Help() {
   };
 
   const currentScenario = getCurrentScenario();
-  console.log('Current Scenario:', currentScenario); // Debug
 
   return (
     <div
@@ -449,54 +436,52 @@ function Help() {
           />
         )}
 
-        {showOptions &&
-          currentScenario.config &&
-          currentScenario.config.question !== 'Carregando...' && (
-            <div
-              className={`max-w-2xl mx-auto px-2 md:px-4 mt-4 md:mt-8 transition-all duration-500 ${
-                showOptions ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        {showOptions && (
+          <div
+            className={`max-w-2xl mx-auto px-2 md:px-4 mt-4 md:mt-8 transition-all duration-500 ${
+              showOptions ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}
+          >
+            <h2
+              className={`text-lg md:text-xl font-semibold mb-4 text-center ${
+                isDark ? 'text-white' : 'text-gray-900'
               }`}
             >
-              <h2
-                className={`text-lg md:text-xl font-semibold mb-4 text-center ${
-                  isDark ? 'text-white' : 'text-gray-900'
-                }`}
-              >
-                {currentScenario.config.question}
-              </h2>
-              <div className="grid gap-3">
-                {options.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => handleAnswer(option)}
-                    disabled={hasAnswered}
-                    className={`p-3 md:p-4 rounded-lg text-left min-h-[60px] md:min-h-[80px] flex items-center text-sm md:text-base ${
-                      hasAnswered
-                        ? option.isCorrect
+              {currentScenario.config.question}
+            </h2>
+            <div className="grid gap-3">
+              {options.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => handleAnswer(option)}
+                  disabled={hasAnswered}
+                  className={`p-3 md:p-4 rounded-lg text-left min-h-[60px] md:min-h-[80px] flex items-center text-sm md:text-base ${
+                    hasAnswered
+                      ? option.isCorrect
+                        ? isDark
+                          ? 'bg-green-700 border-green-600 text-white'
+                          : 'bg-green-600 border-green-700 text-white'
+                        : option.id === selectedAnswer
                           ? isDark
-                            ? 'bg-green-700 border-green-600 text-white'
-                            : 'bg-green-600 border-green-700 text-white'
-                          : option.id === selectedAnswer
-                            ? isDark
-                              ? 'bg-red-700 border-red-600 text-white'
-                              : 'bg-red-600 border-red-700 text-white'
-                            : isDark
-                              ? 'bg-gray-800 text-gray-300'
-                              : 'bg-gray-100 text-gray-700'
-                        : isDark
-                          ? 'bg-gray-800 hover:bg-gray-700 text-white'
-                          : 'bg-white hover:bg-gray-50 text-gray-900'
-                    } border transition-colors ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
-                  >
-                    <span className="w-[30px] md:w-[40px] font-bold text-base md:text-lg">
-                      {option.label}
-                    </span>
-                    <span className="flex-1">{option.text}</span>
-                  </button>
-                ))}
-              </div>
+                            ? 'bg-red-700 border-red-600 text-white'
+                            : 'bg-red-600 border-red-700 text-white'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-300'
+                            : 'bg-gray-100 text-gray-700'
+                      : isDark
+                        ? 'bg-gray-800 hover:bg-gray-700 text-white'
+                        : 'bg-white hover:bg-gray-50 text-gray-900'
+                  } border transition-colors ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
+                >
+                  <span className="w-[30px] md:w-[40px] font-bold text-base md:text-lg">
+                    {option.label}
+                  </span>
+                  <span className="flex-1">{option.text}</span>
+                </button>
+              ))}
             </div>
-          )}
+          </div>
+        )}
       </div>
       {showSimulations && <Footer isDark={isDark} />}
     </div>
