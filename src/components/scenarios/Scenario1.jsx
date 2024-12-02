@@ -71,22 +71,27 @@ const resetConfig = () => {
   };
 };
 
+// Configurações da simulação
 const SIMULATION_CONFIG = {
-  SOURCE_POSITION: -2.0,
-  BOUNDARY_RADIUS: 9.0,
-  BASE_SPEED: 3.0,
-  TIME_SCALE: 1,
-  REMOVAL_THRESHOLD: 1.5,
-  PARTICLE_SIZE: 0.2,
-  HEAD_LENGTH: 0.1,
-  HEAD_WIDTH: 0.1,
-  MIN_TRAVEL_DISTANCE: 4.0,
-  CANNON_LENGTH: 0.8,
-  CANNON_RADIUS: 0.15,
-  CANNON_SEGMENTS: 32,
-  CANNON_OPENING_RADIUS: 0.05,
+  SOURCE_POSITION: -2.0, // Posição inicial da fonte no eixo X. Alterar este valor move a fonte.
+  BOUNDARY_RADIUS: 9.0, // Raio do limite onde as partículas são removidas da simulação.
+  BASE_SPEED: 3.0, // Velocidade base das partículas. Aumentar este valor faz as partículas se moverem mais rápido.
+  TIME_SCALE: 1, // Escala de tempo da simulação. Aumentar acelera o tempo, diminuir desacelera.
+  REMOVAL_THRESHOLD: 1.5, // Limite de distância para remoção das partículas.
+  PARTICLE_SIZE: 0.2, // Tamanho visual das partículas na simulação.
+  HEAD_LENGTH: 0.1, // Comprimento da cabeça das setas que representam as partículas.
+  HEAD_WIDTH: 0.1, // Largura da cabeça das setas.
+  MIN_TRAVEL_DISTANCE: 4.0, // Distância mínima que as partículas viajam antes de serem removidas.
+  CANNON_LENGTH: 0.8, // Comprimento do canhão (representação da fonte).
+  CANNON_RADIUS: 0.15, // Raio do canhão.
+  CANNON_SEGMENTS: 32, // Número de segmentos para desenhar o canhão (define a suavidade).
+  CANNON_OPENING_RADIUS: 0.05, // Raio de abertura do canhão.
+  EMISSION_ANGLE: 15, // Ângulo de emissão do canhão em graus. Alterar este valor muda a direção inicial das partículas.
+  EMISSION_ANGLE_SPREAD: 15, // Ângulo de espalhamento das partículas em graus. Alterar este valor muda a dispersão das partículas emitidas.
 };
 
+// Prompt que é enviado para a API do OpenAI para gerar o conteúdo do cenário.
+// Se quiser alterar o prompt que busca a resposta da API, modifique o texto abaixo.
 const scenarioPrompt = `Gere uma questão de múltipla escolha sobre o seguinte cenário:
 São mostrados dois cenários de atenuação de radiação em 3D:
 - No primeiro cenário, a radiação interage com uma barreira com baixo coeficiente de atenuação
@@ -131,16 +136,17 @@ Retorne a resposta EXATAMENTE neste formato JSON:
       "isCorrect": false
     }
   ],
-  "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou, importante não citar os números da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas]",
-  "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta, importante não citar os números da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas]"
+  "successMessage": "[Mensagem de parabéns explicando porque a resposta está correta e reforçando o conceito que o aluno dominou, importante não citar os números da alternativa como por exemplo primeira, segunda, terceira, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas]",
+  "detailedExplanation": "[Explicação detalhada da resposta correta e análise de por que cada uma das outras alternativas está incorreta, importante não citar os números da alternativa como por exemplo primeira, segunda, terceira, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas]"
 }`;
 
+// Função para obter a configuração específica do cenário
 const getSimulationConfig = (scenarioNumber) => {
   return {
-    particleInterval: 5, // Mesma taxa de emissão para ambos os cenários
-    maxParticles: 400, // Mesmo limite de partículas
-    ricochetProbability: scenarioNumber === 2 ? 0.8 : 0.2, // Cenário 2 reflete muito mais
-    transmissionProbability: scenarioNumber === 2 ? 0.15 : 0.7, // Cenário 2 transmite menos
+    particleInterval: 5, // Intervalo entre emissões de partículas em milissegundos. Diminuir este valor faz a fonte emitir mais partículas.
+    maxParticles: 400, // Número máximo de partículas na cena. Aumentar este valor permite mais partículas simultaneamente.
+    ricochetProbability: scenarioNumber === 2 ? 0.8 : 0.2, // Probabilidade de ricochete (reflexão) na barreira. Alterar este valor muda o coeficiente de atenuação (maior valor, mais reflexão).
+    transmissionProbability: scenarioNumber === 2 ? 0.15 : 0.7, // Probabilidade de transmissão através da barreira. Alterar este valor muda o coeficiente de atenuação (maior valor, mais transmissão).
   };
 };
 
@@ -179,7 +185,7 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'A resposta correta considera que a atenuação está diretamente relacionada às propriedades do material, como o coeficiente de atenuação, que determina o quanto o material pode bloquear ou absorver a radiação. ' +
             'Além disso, o mesmo feixe de radiação interage de maneira diferente com materiais distintos, devido às suas características intrínsecas. ' +
             'As outras respostas estão incorretas porque confundem as propriedades dos materiais com as da radiação, ou não interpretam corretamente os mecanismos de interação envolvidos. ' +
-            'Algumas ainda apresentam conceitos que não são fisicamente consistentes, como sugerir resultados que não são possíveis segundo os princípios físicos.Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
+            'Algumas ainda apresentam conceitos que não são fisicamente consistentes, como sugerir resultados que não são possíveis segundo os princípios físicos.Não cite o número da alternativa como por exemplo primeira, segunda, terceira, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -203,7 +209,7 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           detailedExplanation:
             'A resposta correta considera que a atenuação está diretamente ligada às propriedades do material, sendo influenciada por fatores como o coeficiente de atenuação, que determina a capacidade do material de absorver ou bloquear a radiação. ' +
             'O mesmo feixe de radiação pode interagir de maneiras distintas dependendo das características intrínsecas do material atravessado. ' +
-            'As outras respostas estão incorretas porque apresentam conceitos equivocados, como confundir as propriedades do material com as da radiação, ignorar os mecanismos corretos de interação ou sugerir interpretações que não são fisicamente consistentes. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
+            'As outras respostas estão incorretas porque apresentam conceitos equivocados, como confundir as propriedades do material com as da radiação, ignorar os mecanismos corretos de interação ou sugerir interpretações que não são fisicamente consistentes. Não cite o número da alternativa como por exemplo primeira, segunda, terceira, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         // Atualiza a configuração com fallback
@@ -250,6 +256,8 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       directionalLight.position.set(5, 5, 5);
       scene.add(directionalLight);
 
+      // Cria o canhão (fonte de partículas)
+      const emissionAngle = THREE.MathUtils.degToRad(SIMULATION_CONFIG.EMISSION_ANGLE);
       const cannonGeometry = new THREE.CylinderGeometry(
         SIMULATION_CONFIG.CANNON_RADIUS,
         SIMULATION_CONFIG.CANNON_RADIUS,
@@ -263,7 +271,6 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       });
       const cannon = new THREE.Mesh(cannonGeometry, cannonMaterial);
 
-      const emissionAngle = THREE.MathUtils.degToRad(15);
       cannon.rotation.z = Math.PI / 2 + emissionAngle;
 
       const cannonPosition = new THREE.Vector3(
@@ -275,6 +282,8 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       cannon.position.copy(cannonPosition);
       scene.add(cannon);
 
+      // Cria o anteparo (barreira) na posição central.
+      // Para aumentar a espessura do anteparo, altere o primeiro parâmetro (0.2) da BoxGeometry abaixo.
       const barrier = new THREE.Mesh(
         new THREE.BoxGeometry(0.2, 2.5, 1.0),
         new THREE.MeshPhongMaterial({
@@ -322,23 +331,35 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
 
     const scenarioConfig = getSimulationConfig(scenarioNumber);
 
-    const createParticle = () => {
-      const theta = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
-      const phi = THREE.MathUtils.degToRad(THREE.MathUtils.randFloatSpread(15));
+    // Converte o ângulo de emissão para radianos
+    const emissionAngle = THREE.MathUtils.degToRad(SIMULATION_CONFIG.EMISSION_ANGLE);
 
+    // Função responsável por criar uma nova partícula
+    const createParticle = () => {
+      // Gera ângulos aleatórios para a direção inicial da partícula dentro do espalhamento definido.
+      const theta = THREE.MathUtils.degToRad(
+        THREE.MathUtils.randFloatSpread(SIMULATION_CONFIG.EMISSION_ANGLE_SPREAD)
+      ); // Ângulo aleatório em torno do eixo Y.
+      const phi = THREE.MathUtils.degToRad(
+        THREE.MathUtils.randFloatSpread(SIMULATION_CONFIG.EMISSION_ANGLE_SPREAD)
+      ); // Ângulo aleatório em torno do eixo Z.
+
+      // Calcula a velocidade inicial da partícula com base nos ângulos aleatórios.
       const velocity = new THREE.Vector3(
         SIMULATION_CONFIG.BASE_SPEED * Math.cos(theta) * Math.cos(phi),
         SIMULATION_CONFIG.BASE_SPEED * Math.sin(phi) + 1,
         SIMULATION_CONFIG.BASE_SPEED * Math.sin(theta) * Math.cos(phi)
       );
 
+      // Define a posição inicial da partícula na ponta do canhão.
       const position = new THREE.Vector3(
         SIMULATION_CONFIG.SOURCE_POSITION +
-          (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(THREE.MathUtils.degToRad(15)),
-        (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.sin(THREE.MathUtils.degToRad(15)),
+          (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.cos(emissionAngle),
+        (SIMULATION_CONFIG.CANNON_LENGTH / 2) * Math.sin(emissionAngle),
         0
       );
 
+      // Cria uma seta para representar a partícula.
       const particle = new THREE.ArrowHelper(
         velocity.clone().normalize(),
         position.clone(),
@@ -358,9 +379,12 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
       return particle;
     };
 
+    // Função responsável por atualizar as partículas existentes na cena.
+    // Esta função é responsável por guiar as partículas em movimento retilíneo uniforme (MRU).
     const updateParticles = (deltaTime) => {
       const scaledDelta = deltaTime * SIMULATION_CONFIG.TIME_SCALE;
 
+      // Limpa partículas antigas se ultrapassar o máximo permitido.
       while (particlesRef.current.length >= scenarioConfig.maxParticles) {
         const oldestParticle = particlesRef.current.shift();
         scene.remove(oldestParticle);
@@ -372,25 +396,30 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         const { velocity, position, lastPosition } = particle.userData;
         position.copy(lastPosition).add(velocity.clone().multiplyScalar(scaledDelta));
 
+        // Verifica colisão com o anteparo (barreira)
+        // Os limites abaixo devem corresponder à metade das dimensões do anteparo definido na BoxGeometry
         if (
-          position.x >= -0.1 &&
+          position.x >= -0.1 && // Metade da espessura do anteparo em X
           position.x <= 0.1 &&
-          position.y >= -1.25 &&
+          position.y >= -1.25 && // Metade da altura do anteparo em Y
           position.y <= 1.25 &&
-          position.z >= -0.5 &&
+          position.z >= -0.5 && // Metade da profundidade do anteparo em Z
           position.z <= 0.5
         ) {
           const rand = Math.random();
 
           if (rand < scenarioConfig.ricochetProbability) {
+            // Partícula ricocheteia (reflete) na barreira
             velocity.x *= -1;
             position.x = velocity.x > 0 ? 0.11 : -0.11;
           } else if (
             rand <
             scenarioConfig.ricochetProbability + scenarioConfig.transmissionProbability
           ) {
+            // Partícula é transmitida através da barreira
             position.x = velocity.x > 0 ? 0.11 : -0.11;
           } else {
+            // Partícula é absorvida pela barreira e removida
             scene.remove(particle);
             return false;
           }
@@ -400,6 +429,7 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
         particle.setDirection(velocity.clone().normalize());
         lastPosition.copy(position);
 
+        // Remove partículas que saíram dos limites da cena
         if (position.length() > SIMULATION_CONFIG.BOUNDARY_RADIUS) {
           scene.remove(particle);
           return false;

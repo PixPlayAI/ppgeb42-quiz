@@ -90,6 +90,7 @@ Este quiz foi desenvolvido como uma ferramenta educacional para:
 
 Contribuições são sempre bem-vindas! Se você tem alguma sugestão para melhorar o quiz:
 
+0. 🔬 O "Scenario1" (src/components/scenarios/Scenario1.jsx) está super comentado e permite um bom aprendizado sobre as tecnologias usadas.
 1. 🍴 Faça um Fork do projeto
 2. 🔨 Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
 3. 💾 Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
