@@ -89,7 +89,7 @@ const WelcomeModal = ({ isOpen, onStart, isDark }) => {
                     <li>
                       Responder cada questão em até{' '}
                       <span className={`font-bold ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>
-                        20 segundos
+                        30 segundos
                       </span>{' '}
                       ⏱️
                     </li>

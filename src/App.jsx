@@ -168,7 +168,7 @@ function App() {
   const [isDark, setIsDark] = useState(true);
   const [options, setOptions] = useState([]);
   const [initialStart, setInitialStart] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(20.0);
+  const [timeLeft, setTimeLeft] = useState(30.0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [lastAnswerCorrect, setLastAnswerCorrect] = useState(false);
   const [scenarioQueue, setScenarioQueue] = useState([]);
@@ -233,7 +233,7 @@ function App() {
     setHasAnswered(false);
     setSelectedAnswer(null);
     setInitialStart(true);
-    setTimeLeft(20.0);
+    setTimeLeft(30.0);
   };
 
   const handleStartGame = () => {
@@ -251,7 +251,7 @@ function App() {
 
     if (isPlaying) {
       if (initialStart) {
-        setTimeLeft(20.0);
+        setTimeLeft(30.0);
         setInitialStart(false);
       }
 

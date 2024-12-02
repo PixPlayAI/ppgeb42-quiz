@@ -31,7 +31,7 @@ O **Quiz Monte Carlo** é um webapp interativo desenvolvido especialmente para a
 3. **Resposta e Avaliação** ✍️
    - Uma pergunta e quatro alternativas são geradas por Inteligência Artificial
    - Escolha a alternativa que melhor explica os fenômenos observados
-   - Você tem 20 segundos para responder cada questão
+   - Você tem 30 segundos para responder cada questão
    - A geração das perguntas pode levar alguns segundos
    - Feedback imediato sobre sua resposta
 
@@ -40,7 +40,7 @@ O **Quiz Monte Carlo** é um webapp interativo desenvolvido especialmente para a
 Para vencer o quiz, você precisa:
 
 - 🎯 Acertar 3 questões consecutivas
-- ⏱️ Responder cada questão em até 20 segundos
+- ⏱️ Responder cada questão em até 30 segundos
 - 📝 Selecionar a alternativa correta que explica os fenômenos observados
 
 ⚠️ **Atenção**: Se errar uma questão ou o tempo acabar:
