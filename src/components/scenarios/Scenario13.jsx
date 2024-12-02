@@ -1,9 +1,10 @@
 // src/components/scenarios/Scenario13.jsx
+
 import React, { useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { generateScenarioContent } from '../../services/openai';
 
-// Configuração inicial sempre com "Carregando..."
+// Configuração inicial do cenário, com valores padrão de "Carregando..."
 let SCENARIO_CONFIG = {
   id: 'scenario13',
   title: 'Cenário III: Penetração de Radiação',
@@ -34,10 +35,10 @@ let SCENARIO_CONFIG = {
   detailedExplanation: 'Carregando...',
 };
 
-// Variável para controlar a inicialização
+// Variável para controlar se o cenário já foi inicializado
 let isInitialized = false;
 
-// Função para resetar a configuração
+// Função para resetar a configuração do cenário para o estado inicial
 const resetConfig = () => {
   SCENARIO_CONFIG = {
     id: 'scenario13',
@@ -70,20 +71,23 @@ const resetConfig = () => {
   };
 };
 
-// SIMULATION_CONFIG para este cenário
+// Configurações específicas da simulação para este cenário
 const SIMULATION_CONFIG = {
+  // Área de emissão das partículas (posição e dimensões)
   emissionArea: {
     x: 30,
     y: 135,
     width: 20,
     height: 20,
   },
+  // Configurações do "canhão" que emite as partículas
   cannon: {
     x: 20,
     y: 125,
     width: 40,
     height: 40,
   },
+  // Configurações dos anteparos (barreiras)
   barriers: [
     {
       name: 'Papel',
@@ -100,37 +104,40 @@ const SIMULATION_CONFIG = {
       height: 200,
     },
   ],
+  // Tipos de partículas e suas interações com os materiais
   particleTypes: [
     {
       type: 'alpha',
-      color: '#3b82f6', // azul
+      color: '#3b82f6', // Azul para partículas alfa
       interaction: {
-        papel: 'reflect',
-        alumínio: 'pass',
+        papel: 'reflect', // Partícula alfa é refletida pelo papel
+        alumínio: 'pass', // Partícula alfa passa pelo alumínio
       },
     },
     {
       type: 'beta',
-      color: '#f97316', // laranja
+      color: '#f97316', // Laranja para partículas beta
       interaction: {
-        papel: 'pass',
-        alumínio: 'reflect',
+        papel: 'pass', // Partícula beta passa pelo papel
+        alumínio: 'reflect', // Partícula beta é refletida pelo alumínio
       },
     },
     {
       type: 'gamma',
-      color: '#10b981', // verde
+      color: '#10b981', // Verde para partículas gama
       interaction: {
-        papel: 'pass',
-        alumínio: 'pass',
+        papel: 'pass', // Partícula gama passa pelo papel
+        alumínio: 'pass', // Partícula gama passa pelo alumínio
       },
     },
   ],
-  emissionRate: 2,
-  emissionInterval: 100,
-  maxParticles: 500,
+  emissionRate: 2, // Número de partículas emitidas por vez
+  emissionInterval: 100, // Intervalo de tempo entre emissões (ms)
+  maxParticles: 500, // Número máximo de partículas simultâneas na cena
 };
 
+// Prompt que é enviado para a API do OpenAI para gerar o conteúdo do cenário.
+// Modifique este texto se quiser alterar o comportamento da geração de conteúdo.
 const scenarioPrompt = `
 Gere uma questão de múltipla escolha sobre o seguinte cenário:
 
@@ -194,18 +201,24 @@ Retorne a resposta EXATAMENTE neste formato JSON:
 }
 `;
 
+// Componente principal do cenário
 const Scenario13 = ({ isPlaying, isDark }) => {
+  // Referência para o elemento canvas
   const canvasRef = useRef(null);
+  // Lista de partículas ativas na cena
   const particles = useRef([]);
+  // Referência para controlar o loop de animação
   const animationFrameRef = useRef(null);
+  // Referência para controlar o tempo da última emissão de partículas
   const lastEmissionTimeRef = useRef(Date.now());
 
-  // Função para atualizar a configuração e disparar evento
+  // Função para atualizar a configuração e disparar evento personalizado
   const updateConfig = useCallback((newConfig) => {
     SCENARIO_CONFIG = newConfig;
     window.dispatchEvent(new CustomEvent('scenarioConfigUpdated'));
   }, []);
 
+  // Efeito para buscar o conteúdo do cenário usando a API do OpenAI
   useEffect(() => {
     const fetchScenarioContent = async () => {
       // Se já foi inicializado, não faz nada
@@ -214,6 +227,7 @@ const Scenario13 = ({ isPlaying, isDark }) => {
       try {
         isInitialized = true; // Marca como inicializado antes da chamada
 
+        // Chama a função para gerar o conteúdo do cenário
         const generatedContent = await generateScenarioContent(scenarioPrompt);
 
         // Verifica se o conteúdo foi gerado corretamente
@@ -228,7 +242,7 @@ const Scenario13 = ({ isPlaying, isDark }) => {
             'As outras alternativas estão incorretas pois não refletem corretamente as propriedades de penetração e composição das radiações.';
         }
 
-        // Atualiza a configuração
+        // Atualiza a configuração com o conteúdo gerado
         SCENARIO_CONFIG = {
           ...generatedContent,
           id: 'scenario13',
@@ -241,7 +255,7 @@ const Scenario13 = ({ isPlaying, isDark }) => {
         console.error('🔴 Erro ao buscar conteúdo:', error);
         isInitialized = false; // Reset em caso de erro
 
-        // Configuração de fallback
+        // Configuração de fallback com mensagens padrão
         const fallbackConfig = {
           ...SCENARIO_CONFIG,
           successMessage: `Parabéns! Você compreendeu como as diferentes radiações interagem com materiais diversos. Sua resposta indica conhecimento sobre a penetração e composição das partículas alfa, beta e gama.`,
@@ -253,16 +267,16 @@ const Scenario13 = ({ isPlaying, isDark }) => {
             'As outras alternativas estão incorretas pois não refletem corretamente as propriedades de penetração e composição das radiações.',
         };
 
-        // Atualiza a configuração com fallback
+        // Atualiza a configuração com o fallback
         SCENARIO_CONFIG = fallbackConfig;
         updateConfig(SCENARIO_CONFIG);
       }
     };
 
-    // Reset inicial
+    // Reseta a configuração inicial
     resetConfig();
 
-    // Inicia o fetch
+    // Inicia a busca do conteúdo do cenário
     fetchScenarioContent();
 
     // Cleanup
@@ -271,18 +285,24 @@ const Scenario13 = ({ isPlaying, isDark }) => {
     };
   }, [updateConfig]);
 
+  // Efeito para a lógica de animação e renderização do cenário
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
+    // Função para criar uma nova partícula
     const createParticle = () => {
+      // Seleciona aleatoriamente um tipo de partícula (alfa, beta ou gama)
       const particleType =
         SIMULATION_CONFIG.particleTypes[
           Math.floor(Math.random() * SIMULATION_CONFIG.particleTypes.length)
         ];
+      // Define um ângulo aleatório ligeiramente variado
       const angle = (Math.random() - 0.5) * (Math.PI / 16);
+      // Define uma velocidade aleatória dentro de um intervalo
       const speed = 2 + Math.random();
 
+      // Posição inicial de emissão dentro da área definida
       const emissionX =
         SIMULATION_CONFIG.emissionArea.x + Math.random() * SIMULATION_CONFIG.emissionArea.width;
       const emissionY =
@@ -294,34 +314,35 @@ const Scenario13 = ({ isPlaying, isDark }) => {
         color: particleType.color,
         x: emissionX,
         y: emissionY,
-        vx: speed * Math.cos(angle),
-        vy: speed * Math.sin(angle),
+        vx: speed * Math.cos(angle), // Componente x da velocidade
+        vy: speed * Math.sin(angle), // Componente y da velocidade
         active: true,
-        trail: [{ x: emissionX, y: emissionY }],
+        trail: [{ x: emissionX, y: emissionY }], // Trilhas para desenhar o caminho percorrido
       };
     };
 
+    // Função principal de animação que será chamada em loop
     const animate = () => {
       const currentTime = Date.now();
 
-      // Limpa o canvas
+      // Limpa o canvas para redesenhar a cena
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Fundo
+      // Desenha o fundo
       ctx.fillStyle = isDark ? '#1f2937' : '#e5e7eb';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Título
+      // Desenha o título do cenário
       ctx.fillStyle = isDark ? '#e5e7eb' : '#1f2937';
       ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.fillText('Cenário III', canvas.width / 2, 30);
 
-      // Desenha os anteparos
+      // Desenha os anteparos (barreiras)
       SIMULATION_CONFIG.barriers.forEach((barrier) => {
-        ctx.fillStyle = '#6b7280';
+        ctx.fillStyle = '#6b7280'; // Cor do anteparo
         ctx.fillRect(barrier.x, barrier.y, barrier.width, barrier.height);
-        ctx.fillStyle = isDark ? '#e5e7eb' : '#1f2937';
+        ctx.fillStyle = isDark ? '#e5e7eb' : '#1f2937'; // Cor do texto
         ctx.font = '12px Arial';
         ctx.textAlign = 'center';
         ctx.fillText(barrier.name, barrier.x + barrier.width / 2, barrier.y - 5);
@@ -339,11 +360,11 @@ const Scenario13 = ({ isPlaying, isDark }) => {
           lastEmissionTimeRef.current = currentTime;
         }
 
-        // Atualização das partículas
+        // Atualização das partículas existentes
         particles.current = particles.current.filter((particle) => {
           if (!particle.active) return false;
 
-          // Atualiza posição
+          // Atualiza a posição da partícula com base em sua velocidade
           particle.x += particle.vx;
           particle.y += particle.vy;
 
@@ -355,15 +376,18 @@ const Scenario13 = ({ isPlaying, isDark }) => {
               particle.y >= barrier.y &&
               particle.y <= barrier.y + barrier.height
             ) {
+              // Obtém o tipo de interação da partícula com o material do anteparo
               const interaction = SIMULATION_CONFIG.particleTypes.find(
                 (pt) => pt.type === particle.type
               ).interaction[barrier.name.toLowerCase()];
 
               if (interaction === 'reflect') {
+                // Se a interação for "reflect", inverte a velocidade em x (reflexão horizontal)
                 particle.vx = -particle.vx;
-                particle.x = barrier.x - 1; // Move a partícula para fora do anteparo
+                particle.x = barrier.x - 1; // Move a partícula um pixel para fora do anteparo para evitar múltiplas colisões
               } else if (interaction === 'pass') {
-                // Nada acontece, partícula continua
+                // Se a interação for "pass", a partícula continua sem alteração
+                // Exemplo: Partículas gama passam por todos os materiais
               } else {
                 // Se não houver interação definida, desativa a partícula
                 particle.active = false;
@@ -371,51 +395,51 @@ const Scenario13 = ({ isPlaying, isDark }) => {
             }
           });
 
-          // Verifica se a partícula saiu do canvas
+          // Verifica se a partícula saiu dos limites do canvas
           if (particle.x > canvas.width || particle.y < 0 || particle.y > canvas.height) {
-            return false;
+            return false; // Remove a partícula da lista
           }
 
-          // Atualiza a trilha da partícula
+          // Atualiza a trilha da partícula para desenhar o rastro
           particle.trail.push({ x: particle.x, y: particle.y });
-          if (particle.trail.length > 20) particle.trail.shift();
+          if (particle.trail.length > 20) particle.trail.shift(); // Limita o tamanho da trilha
 
-          return true;
+          return true; // Mantém a partícula na lista
         });
       }
 
-      // Desenha as partículas
+      // Desenha as partículas na cena
       particles.current.forEach((particle) => {
-        // Desenha a trilha
+        // Desenha a trilha (rastro) da partícula
         ctx.beginPath();
         ctx.moveTo(particle.trail[0].x, particle.trail[0].y);
         particle.trail.forEach((point) => {
           ctx.lineTo(point.x, point.y);
         });
-        ctx.strokeStyle = `${particle.color}80`;
+        ctx.strokeStyle = `${particle.color}80`; // Cor com transparência para o rastro
         ctx.lineWidth = 1;
         ctx.stroke();
 
-        // Desenha a partícula
+        // Desenha a partícula em si (como um pequeno círculo)
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
         ctx.fillStyle = particle.color;
         ctx.fill();
       });
 
-      // Desenha o canhão
+      // Desenha o canhão (fonte emissora de partículas)
       const cannon = SIMULATION_CONFIG.cannon;
       ctx.fillStyle = '#4b5563';
       ctx.fillRect(cannon.x, cannon.y, cannon.width, cannon.height);
 
-      // Solicita o próximo frame
+      // Solicita o próximo frame de animação
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
-    // Inicia a animação
+    // Inicia a animação chamando a função animate
     animationFrameRef.current = requestAnimationFrame(animate);
 
-    // Cleanup
+    // Cleanup para cancelar a animação quando o componente for desmontado
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -438,11 +462,11 @@ Scenario13.propTypes = {
   isDark: PropTypes.bool.isRequired,
 };
 
-// Função para obter a configuração do cenário
+// Função para obter a configuração atual do cenário
 export const getScenarioConfig = () => SCENARIO_CONFIG;
 
 // Exporta a configuração como constante
 export { SCENARIO_CONFIG };
 
-// Exporta o componente memoizado
+// Exporta o componente memoizado para evitar renderizações desnecessárias
 export default React.memo(Scenario13);
