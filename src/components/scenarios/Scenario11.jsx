@@ -163,7 +163,7 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
           generatedContent.successMessage =
             'Parabéns! Você compreendeu como a meia-vida dos cenários influencia sua aplicação clínica.';
           generatedContent.detailedExplanation =
-            'A resposta correta relaciona a meia-vida dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com meias-vidas mais longas são adequados para terapia, enquanto aqueles com meias-vidas mais curtas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.';
+            'A resposta correta relaciona a meia-vida dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com meias-vidas mais longas são adequados para terapia, enquanto aqueles com meias-vidas mais curtas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -185,7 +185,7 @@ const Scenario11 = ({ isDark, scenarioNumber = 1 }) => {
           successMessage:
             'Parabéns! Você compreendeu como a meia-vida dos cenários influencia sua aplicação clínica.',
           detailedExplanation:
-            'A resposta correta relaciona a meia-vida dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com meias-vidas mais longas são adequados para terapia, enquanto aqueles com meias-vidas mais curtas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.',
+            'A resposta correta relaciona a meia-vida dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com meias-vidas mais longas são adequados para terapia, enquanto aqueles com meias-vidas mais curtas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhada',
         };
 
         // Atualiza a configuração com fallback

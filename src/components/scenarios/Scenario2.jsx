@@ -164,7 +164,7 @@ const Scenario2 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           generatedContent.detailedExplanation =
             'A resposta correta considera que o coeficiente de atenuação linear (μ) é uma propriedade intrínseca do material e que um valor maior de μ está associado a uma capacidade maior de blindagem contra radiação. ' +
             'Além disso, a atenuação não depende apenas das propriedades do material, mas também da espessura da barreira utilizada. ' +
-            'As outras respostas estão incorretas porque confundem os conceitos de intensidade e atenuação, interpretam erroneamente a relação entre espessura e atenuação, ou apresentam associações equivocadas entre tipos de radiação e sua capacidade de penetração.';
+            'As outras respostas estão incorretas porque confundem os conceitos de intensidade e atenuação, interpretam erroneamente a relação entre espessura e atenuação, ou apresentam associações equivocadas entre tipos de radiação e sua capacidade de penetração.Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -189,7 +189,7 @@ const Scenario2 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'A resposta correta considera que o coeficiente de atenuação linear (μ) é uma propriedade fundamental do material, determinando sua capacidade de bloquear ou absorver radiação. ' +
             'Materiais com um coeficiente de atenuação maior oferecem maior eficiência de blindagem. ' +
             'Além disso, a atenuação depende não apenas do material utilizado, mas também da espessura da barreira, que influencia diretamente na redução da radiação transmitida. ' +
-            'As outras respostas estão incorretas porque confundem conceitos como intensidade e atenuação, interpretam de forma errada a relação entre espessura e atenuação, ou fazem associações equivocadas sobre os tipos de radiação e sua capacidade de penetração.',
+            'As outras respostas estão incorretas porque confundem conceitos como intensidade e atenuação, interpretam de forma errada a relação entre espessura e atenuação, ou fazem associações equivocadas sobre os tipos de radiação e sua capacidade de penetração.Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         // Atualiza a configuração com fallback

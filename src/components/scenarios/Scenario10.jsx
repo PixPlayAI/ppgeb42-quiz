@@ -209,7 +209,7 @@ const Scenario10 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           generatedContent.successMessage =
             'Parabéns! Você demonstrou compreender como as características físicas dos radioisótopos influenciam suas aplicações clínicas.';
           generatedContent.detailedExplanation =
-            'A resposta correta relaciona a meia-vida e a energia dos radioisótopos com suas aplicações práticas em diagnóstico ou terapia. Radioisótopos com meias-vidas mais longas e energias mais altas são ideais para terapia, enquanto aqueles com meias-vidas curtas e energias mais baixas são mais adequados para diagnóstico. As outras alternativas não consideram esses aspectos corretamente.';
+            'A resposta correta relaciona a meia-vida e a energia dos radioisótopos com suas aplicações práticas em diagnóstico ou terapia. Radioisótopos com meias-vidas mais longas e energias mais altas são ideais para terapia, enquanto aqueles com meias-vidas curtas e energias mais baixas são mais adequados para diagnóstico. As outras alternativas não consideram esses aspectos corretamente. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -231,7 +231,7 @@ const Scenario10 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           successMessage:
             'Parabéns! Você demonstrou compreender como as características físicas dos radioisótopos influenciam suas aplicações clínicas.',
           detailedExplanation:
-            'A resposta correta relaciona a meia-vida e a energia dos radioisótopos com suas aplicações práticas em diagnóstico ou terapia. Radioisótopos com meias-vidas mais longas e energias mais altas são ideais para terapia, enquanto aqueles com meias-vidas curtas e energias mais baixas são mais adequados para diagnóstico. As outras alternativas não consideram esses aspectos corretamente.',
+            'A resposta correta relaciona a meia-vida e a energia dos radioisótopos com suas aplicações práticas em diagnóstico ou terapia. Radioisótopos com meias-vidas mais longas e energias mais altas são ideais para terapia, enquanto aqueles com meias-vidas curtas e energias mais baixas são mais adequados para diagnóstico. As outras alternativas não consideram esses aspectos corretamente. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         // Atualiza a configuração com fallback

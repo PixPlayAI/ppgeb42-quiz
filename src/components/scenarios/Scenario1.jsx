@@ -179,7 +179,7 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'A resposta correta considera que a atenuação está diretamente relacionada às propriedades do material, como o coeficiente de atenuação, que determina o quanto o material pode bloquear ou absorver a radiação. ' +
             'Além disso, o mesmo feixe de radiação interage de maneira diferente com materiais distintos, devido às suas características intrínsecas. ' +
             'As outras respostas estão incorretas porque confundem as propriedades dos materiais com as da radiação, ou não interpretam corretamente os mecanismos de interação envolvidos. ' +
-            'Algumas ainda apresentam conceitos que não são fisicamente consistentes, como sugerir resultados que não são possíveis segundo os princípios físicos.';
+            'Algumas ainda apresentam conceitos que não são fisicamente consistentes, como sugerir resultados que não são possíveis segundo os princípios físicos.Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -203,7 +203,7 @@ const Scenario1 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           detailedExplanation:
             'A resposta correta considera que a atenuação está diretamente ligada às propriedades do material, sendo influenciada por fatores como o coeficiente de atenuação, que determina a capacidade do material de absorver ou bloquear a radiação. ' +
             'O mesmo feixe de radiação pode interagir de maneiras distintas dependendo das características intrínsecas do material atravessado. ' +
-            'As outras respostas estão incorretas porque apresentam conceitos equivocados, como confundir as propriedades do material com as da radiação, ignorar os mecanismos corretos de interação ou sugerir interpretações que não são fisicamente consistentes.',
+            'As outras respostas estão incorretas porque apresentam conceitos equivocados, como confundir as propriedades do material com as da radiação, ignorar os mecanismos corretos de interação ou sugerir interpretações que não são fisicamente consistentes.Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         // Atualiza a configuração com fallback

@@ -182,7 +182,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           generatedContent.detailedExplanation =
             'A resposta correta considera que alta intensidade de radiação é essencial para aplicações como a radioterapia externa, enquanto baixa intensidade é mais apropriada para exames diagnósticos. ' +
             'Além disso, a escolha dos radioisótopos varia conforme a aplicação, garantindo a melhor combinação de eficácia e segurança. ' +
-            'As outras respostas estão incorretas porque confundem as aplicações adequadas para cada intensidade, interpretam de forma errada o papel da blindagem, ou sugerem usos inadequados para os radioisótopos apresentados.';
+            'As outras respostas estão incorretas porque confundem as aplicações adequadas para cada intensidade, interpretam de forma errada o papel da blindagem, ou sugerem usos inadequados para os radioisótopos apresentados. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -206,7 +206,7 @@ const Scenario4 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           detailedExplanation:
             'A resposta correta reconhece que alta intensidade de radiação é essencial em tratamentos como a radioterapia externa, enquanto baixa intensidade é mais indicada para exames diagnósticos. ' +
             'Além disso, a escolha dos radioisótopos deve ser feita com base na aplicação específica, garantindo a melhor eficácia e segurança. ' +
-            'As outras respostas estão incorretas porque apresentam confusão sobre as aplicações adequadas para diferentes intensidades de radiação, interpretam erroneamente o papel da blindagem ou sugerem usos inadequados dos radioisótopos mencionados.',
+            'As outras respostas estão incorretas porque apresentam confusão sobre as aplicações adequadas para diferentes intensidades de radiação, interpretam erroneamente o papel da blindagem ou sugerem usos inadequados dos radioisótopos mencionados. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         // Atualiza a configuração com fallback

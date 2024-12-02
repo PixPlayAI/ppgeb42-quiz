@@ -253,7 +253,7 @@ const Scenario7 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'A resposta correta destaca que a colimação é usada para concentrar a radiação em uma área específica, minimizando a exposição desnecessária. As outras alternativas estão incorretas pois:\n' +
             '- Não relacionam a colimação com a segurança ou eficácia do tratamento.\n' +
             '- Sugerem aplicações não relacionadas à física médica.\n' +
-            '- Apresentam conceitos absurdos ou humorísticos que não se aplicam.';
+            '- Apresentam conceitos absurdos ou humorísticos que não se aplicam. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -278,7 +278,7 @@ const Scenario7 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'A resposta correta destaca que a colimação é usada para concentrar a radiação em uma área específica, minimizando a exposição desnecessária. As outras alternativas estão incorretas pois:\n' +
             '- Não relacionam a colimação com a segurança ou eficácia do tratamento.\n' +
             '- Sugerem aplicações não relacionadas à física médica.\n' +
-            '- Apresentam conceitos absurdos ou humorísticos que não se aplicam.',
+            '- Apresentam conceitos absurdos ou humorísticos que não se aplicam. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         // Atualiza a configuração com fallback

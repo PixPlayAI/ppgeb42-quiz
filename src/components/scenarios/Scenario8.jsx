@@ -209,7 +209,7 @@ const Scenario8 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'As outras alternativas estão incorretas porque:\n' +
             '- Confundem os materiais e seus efeitos na colimação.\n' +
             '- Não consideram corretamente a relação entre o coeficiente de atenuação e a colimação.\n' +
-            '- Fazem associações equivocadas entre tipos de materiais e seus usos em colimação.';
+            '- Fazem associações equivocadas entre tipos de materiais e seus usos em colimação. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         SCENARIO_CONFIG = {
@@ -233,7 +233,7 @@ const Scenario8 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'As outras alternativas estão incorretas porque:\n' +
             '- Confundem os materiais e seus efeitos na colimação.\n' +
             '- Não consideram corretamente a relação entre o coeficiente de atenuação e a colimação.\n' +
-            '- Fazem associações equivocadas entre tipos de materiais e seus usos em colimação.',
+            '- Fazem associações equivocadas entre tipos de materiais e seus usos em colimação. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         SCENARIO_CONFIG = fallbackConfig;

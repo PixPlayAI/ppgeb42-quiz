@@ -163,7 +163,7 @@ const Scenario12 = ({ isDark, scenarioNumber = 1 }) => {
           generatedContent.successMessage =
             'Parabéns! Você compreendeu como as energias dos cenários influenciam suas aplicações clínicas.';
           generatedContent.detailedExplanation =
-            'A resposta correta relaciona o espectro de energia dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com energias mais altas são adequados para terapia, enquanto aqueles com energias mais baixas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.';
+            'A resposta correta relaciona o espectro de energia dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com energias mais altas são adequados para terapia, enquanto aqueles com energias mais baixas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -185,7 +185,7 @@ const Scenario12 = ({ isDark, scenarioNumber = 1 }) => {
           successMessage:
             'Parabéns! Você compreendeu como as energias dos cenários influenciam suas aplicações clínicas.',
           detailedExplanation:
-            'A resposta correta relaciona o espectro de energia dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com energias mais altas são adequados para terapia, enquanto aqueles com energias mais baixas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação.',
+            'A resposta correta relaciona o espectro de energia dos cenários com suas aplicações práticas em diagnóstico ou terapia. Cenários com energias mais altas são adequados para terapia, enquanto aqueles com energias mais baixas são ideais para diagnóstico. As outras alternativas não consideram corretamente essa relação. Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas',
         };
 
         // Atualiza a configuração com fallback

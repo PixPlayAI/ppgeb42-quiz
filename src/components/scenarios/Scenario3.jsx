@@ -163,7 +163,7 @@ const Scenario3 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
           generatedContent.detailedExplanation =
             'A resposta correta considera que diferentes intensidades de radiação são adequadas para diferentes aplicações e que a escolha do radioisótopo deve levar em conta não apenas a intensidade, mas também o tipo de radiação emitida. ' +
             'Além disso, a atenuação da radiação é um fator essencial tanto para a segurança quanto para a eficácia das aplicações. ' +
-            'As outras respostas estão incorretas porque confundem as aplicações apropriadas para cada intensidade de radiação, apresentam interpretações equivocadas sobre atenuação e blindagem, ou estabelecem associações inadequadas entre radioisótopos e suas possíveis aplicações.';
+            'As outras respostas estão incorretas porque confundem as aplicações apropriadas para cada intensidade de radiação, apresentam interpretações equivocadas sobre atenuação e blindagem, ou estabelecem associações inadequadas entre radioisótopos e suas possíveis aplicações.Não cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas';
         }
 
         // Atualiza a configuração
@@ -186,7 +186,7 @@ const Scenario3 = ({ isPlaying, isDark, scenarioNumber = 1 }) => {
             'Parabéns! Você demonstrou compreender como diferentes intensidades de radiação podem ser aplicadas em contextos específicos, considerando tanto aspectos de segurança quanto eficácia terapêutica.',
           detailedExplanation:
             'A resposta correta considera que diferentes intensidades de radiação são mais apropriadas para diferentes tipos de aplicações. Além disso, a escolha do radioisótopo deve levar em conta não apenas a intensidade da radiação, mas também o tipo de radiação emitida, para garantir segurança e eficácia. A atenuação da radiação é um aspecto fundamental que influencia diretamente na proteção e no desempenho da aplicação. ' +
-            'As outras respostas estão incorretas porque apresentam confusão sobre quais aplicações são adequadas para cada intensidade de radiação, interpretam de forma errada os conceitos de atenuação e blindagem, ou estabelecem associações imprecisas entre os radioisótopos e suas utilizações.',
+            'As outras respostas estão incorretas porque apresentam confusão sobre quais aplicações são adequadas para cada intensidade de radiação, interpretam de forma errada os conceitos de atenuação e blindagem, ou estabelecem associações imprecisas entre os radioisótopos e suas utilizaçõesNão cite o número da alternativa como por exemplo primeira, segunda, terceria, quarta ou A, B, C, D ou 1, 2, 3, 4 pois as alternativas estão embaralhadas.',
         };
 
         // Atualiza a configuração com fallback
